@@ -417,7 +417,7 @@ class ActiveRecord extends BaseActiveRecord
      */
     public static function instantiate($row)
     {
-        return new self;
+        return Yii::createObject(static::class);
     }
 
     /**
