@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @author Eugene Terentev <eugene@terentev.net>
  */
@@ -16,7 +19,7 @@ class ElasticsearchTargetTest extends TestCase
     public $index = 'yiilogtest';
     public $type = 'log';
 
-    public function testExport()
+    public function testExport(): void
     {
         $logger = $this->logger;
 

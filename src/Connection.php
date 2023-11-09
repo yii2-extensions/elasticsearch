@@ -24,7 +24,6 @@ use yii\helpers\Json;
  * @property-read QueryBuilder $queryBuilder
  *
  * @author Carsten Brandt <mail@cebe.cc>
- * @since 2.0
  */
 class Connection extends Component
 {
@@ -83,7 +82,6 @@ class Connection extends Component
      * which can be overridden for specific nodes in the [[nodes]] property.
      * If [[autodetectCluster]] is true, all nodes received from cluster will be set to use the protocol defined by [[defaultProtocol]]
      * @var string Default protocol to connect to nodes
-     * @since 2.0.5
      */
     public $defaultProtocol = 'http';
     /**
@@ -100,7 +98,6 @@ class Connection extends Component
     public $dataTimeout = null;
     /**
      * @var array additional options used to configure curl session
-     * @since 2.1.4
      */
     public $curlOptions = [];
     /**
@@ -177,7 +174,6 @@ class Connection extends Component
     /**
      * Populates [[nodes]] with the result of a cluster nodes request.
      * @throws Exception if no active node(s) found
-     * @since 2.0.4
      */
     protected function populateNodes()
     {
@@ -279,7 +275,6 @@ class Connection extends Component
      * Creates a bulk command for execution.
      * @param array $config the configuration for the [[BulkCommand]] class
      * @return BulkCommand the DB command
-     * @since 2.0.5
      */
     public function createBulkCommand($config = [])
     {

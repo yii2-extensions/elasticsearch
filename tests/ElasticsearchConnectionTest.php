@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace yiiunit\extensions\elasticsearch;
 
 use yii\elasticsearch\Connection;
@@ -9,7 +11,7 @@ use yii\elasticsearch\Connection;
  */
 class ElasticsearchConnectionTest extends TestCase
 {
-    public function testOpen()
+    public function testOpen(): void
     {
         $connection = new Connection();
         $connection->autodetectCluster;

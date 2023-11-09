@@ -14,7 +14,6 @@ namespace yii\elasticsearch;
  * Exception represents an exception that is caused by Elasticsearch-related operations.
  *
  * @author Carsten Brandt <mail@cebe.cc>
- * @since 2.0
  */
 class Exception extends \yii\db\Exception
 {

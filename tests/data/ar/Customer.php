@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace yiiunit\extensions\elasticsearch\data\ar;
 
 use yii\elasticsearch\Command;
@@ -17,8 +19,8 @@ use yiiunit\extensions\elasticsearch\ActiveRecordTest;
  */
 class Customer extends ActiveRecord
 {
-    const STATUS_ACTIVE = 1;
-    const STATUS_INACTIVE = 2;
+    final public const STATUS_ACTIVE = 1;
+    final public const STATUS_INACTIVE = 2;
 
     public function attributes()
     {
@@ -42,7 +44,7 @@ class Customer extends ActiveRecord
         return $this->hasMany(Order::className(), ['customer_id' => '_id'])->with('orderItems');
     }
 
-    public function afterSave($insert, $changedAttributes)
+    public function afterSave($insert, $changedAttributes): void
     {
         ActiveRecordTest::$afterSaveInsert = $insert;
         ActiveRecordTest::$afterSaveNewRecord = $this->isNewRecord;
@@ -54,7 +56,7 @@ class Customer extends ActiveRecord
      * @param Command $command
      * @param boolean $statusIsBoolean
      */
-    public static function setUpMapping($command)
+    public static function setUpMapping($command): void
     {
         $command->setMapping(static::index(), static::type(), [
             "properties" => [
@@ -74,6 +76,6 @@ class Customer extends ActiveRecord
      */
     public static function find()
     {
-        return new CustomerQuery(get_called_class());
+        return new CustomerQuery(static::class);
     }
 }

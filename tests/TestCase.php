@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace yiiunit\extensions\elasticsearch;
 
 use yii\di\Container;
@@ -21,13 +23,13 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
      * @param  mixed $default default value to use when param is not set.
      * @return mixed  the value of the configuration param
      */
-    public static function getParam($name, $default = null)
+    public static function getParam($name, mixed $default = null)
     {
         if (static::$params === null) {
             static::$params = require(__DIR__ . '/data/config.php');
         }
 
-        return isset(static::$params[$name]) ? static::$params[$name] : $default;
+        return static::$params[$name] ?? $default;
     }
 
     /**

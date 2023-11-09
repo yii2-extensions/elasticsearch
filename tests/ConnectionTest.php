@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace yiiunit\extensions\elasticsearch;
 
 use yii\elasticsearch\Connection;
@@ -20,7 +22,7 @@ class ConnectionTest extends TestCase
         $this->connection = $this->getConnection();
     }
 
-    public function testCreateUrl()
+    public function testCreateUrl(): void
     {
         $reflectedMethod = new \ReflectionMethod($this->connection, 'createUrl');
         $reflectedMethod->setAccessible(true);

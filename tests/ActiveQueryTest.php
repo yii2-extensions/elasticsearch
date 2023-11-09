@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace yiiunit\extensions\elasticsearch;
 use yiiunit\extensions\elasticsearch\data\ar\Item;
-
 
 /**
  * @group elasticsearch
@@ -29,7 +30,7 @@ class ActiveQueryTest extends TestCase
     /**
      * @throws \yii\elasticsearch\Exception
      */
-    public function testColumn()
+    public function testColumn(): void
     {
         $activeQuery = Item::find()->where(['name' => 'item1'])->asArray();
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -38,7 +40,7 @@ class Animal extends ActiveRecord
      * sets up the index for this record
      * @param Command $command
      */
-    public static function setUpMapping($command)
+    public static function setUpMapping($command): void
     {
         $command->setMapping(static::index(), static::type(), [
             "properties" => [
@@ -47,10 +49,10 @@ class Animal extends ActiveRecord
         ]);
     }
 
-    public function init()
+    public function init(): void
     {
         parent::init();
-        $this->species = get_called_class();
+        $this->species = static::class;
     }
 
     public function getDoes()

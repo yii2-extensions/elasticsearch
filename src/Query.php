@@ -55,7 +55,6 @@ use yii\db\QueryTrait;
  * explicitly.
  *
  * @author Carsten Brandt <mail@cebe.cc>
- * @since 2.0
  */
 class Query extends Component implements QueryInterface
 {
@@ -189,7 +188,6 @@ class Query extends Component implements QueryInterface
      * @var string|array The `post_filter` part of the search query for
      * differentially filter search results and aggregations.
      * @see https://www.elastic.co/guide/en/elasticsearch/guide/current/_post_filter.html
-     * @since 2.0.5
      */
     public $postFilter;
     /**
@@ -217,26 +215,22 @@ class Query extends Component implements QueryInterface
     /**
      * @var array list of collapse to add to this query.
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/search-suggesters.html
-     * @since 2.1.0
      */
     public $collapse = [];
     /**
      * @var float Exclude documents which have a _score less than the minimum
      * specified in min_score
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-min-score.html
-     * @since 2.0.4
      */
     public $minScore;
     /**
      * @var array list of options that will passed to commands created by this query.
      * @see Command::$options
-     * @since 2.0.4
      */
     public $options = [];
     /**
      * @var bool Enables explanation for each hit on how its score was computed.
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-explain.html
-     * @since 2.0.5
      */
     public $explain;
 
@@ -298,7 +292,6 @@ class Query extends Component implements QueryInterface
      * database into the format as required by this query.
      * @param array $rows the raw query result from database
      * @return array the converted query result
-     * @since 2.0.4
      */
     public function populate($rows)
     {
@@ -613,7 +606,6 @@ class Query extends Component implements QueryInterface
      * @param array $collapse the configuration options for collapse.
      * @return $this the query object itself
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/5.3/search-request-collapse.html#search-request-collapse
-     * @since 2.1.0
      */
     public function addCollapse($collapse)
     {
@@ -664,7 +656,6 @@ class Query extends Component implements QueryInterface
      * @return BatchQueryResult the batch query result. It implements the
      * [[\Iterator]] interface and can be traversed to retrieve the data in
      * batches.
-     * @since 2.0.4
      */
     public function batch($scrollWindow = '1m', $db = null)
     {
@@ -697,7 +688,6 @@ class Query extends Component implements QueryInterface
      * @return BatchQueryResult the batch query result. It implements the
      * [[\Iterator]] interface and can be traversed to retrieve the data in
      * batches.
-     * @since 2.0.4
      */
     public function each($scrollWindow = '1m', $db = null)
     {
@@ -835,7 +825,6 @@ class Query extends Component implements QueryInterface
      * the minimum specified minScore
      * @return $this the query object itself
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-min-score.html
-     * @since 2.0.4
      */
     public function minScore($minScore)
     {
@@ -849,7 +838,6 @@ class Query extends Component implements QueryInterface
      * @return $this the query object itself
      * @throws InvalidArgumentException if $options is not an array
      * @see Command::$options
-     * @since 2.0.4
      */
     public function options($options)
     {
@@ -867,7 +855,6 @@ class Query extends Component implements QueryInterface
      * @return $this the query object itself
      * @throws InvalidArgumentException if $options is not an array
      * @see options()
-     * @since 2.0.4
      */
     public function addOptions($options)
     {
@@ -914,7 +901,6 @@ class Query extends Component implements QueryInterface
      * @param string|array $filter
      * @return $this the query object itself
      * @see $postFilter
-     * @since 2.0.5
      */
     public function postFilter($filter)
     {
@@ -927,7 +913,6 @@ class Query extends Component implements QueryInterface
      * @param $explain
      * @return $this
      * @see $explain
-     * @since 2.0.5
      */
     public function explain($explain)
     {

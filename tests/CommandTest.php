@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace yiiunit\extensions\elasticsearch;
 
 use yii\elasticsearch\Command;
@@ -22,7 +24,7 @@ class CommandTest extends TestCase
     /**
      * @test
      */
-    public function aliasExists_noAliasesSet_returnsFalse()
+    public function aliasExists_noAliasesSet_returnsFalse(): void
     {
         $testAlias = 'test';
         $aliasExists = $this->command->aliasExists($testAlias);
@@ -33,7 +35,7 @@ class CommandTest extends TestCase
     /**
      * @test
      */
-    public function aliasExists_AliasesAreSetButWithDifferentName_returnsFalse()
+    public function aliasExists_AliasesAreSetButWithDifferentName_returnsFalse(): void
     {
         $index = 'alias_test';
         $testAlias = 'test';
@@ -52,7 +54,7 @@ class CommandTest extends TestCase
     /**
      * @test
      */
-    public function aliasExists_AliasIsSetWithSameName_returnsTrue()
+    public function aliasExists_AliasIsSetWithSameName_returnsTrue(): void
     {
         $index = 'alias_test';
         $testAlias = 'test';
@@ -68,7 +70,7 @@ class CommandTest extends TestCase
     /**
      * @test
      */
-    public function getAliasInfo_noAliasSet_returnsEmptyArray()
+    public function getAliasInfo_noAliasSet_returnsEmptyArray(): void
     {
         $expectedResult = [];
         $actualResult = $this->command->getAliasInfo();
@@ -80,21 +82,15 @@ class CommandTest extends TestCase
      * @test
      * @dataProvider provideDataForGetAliasInfo
      *
-     * @param string $index
-     * @param string $type
-     * @param array $mapping
-     * @param string $alias
-     * @param array $expectedResult
-     * @param array $aliasParameters
      */
     public function getAliasInfo_singleAliasIsSet_returnsInfoForAlias(
-        $index,
-        $type,
-        $mapping,
-        $alias,
-        $expectedResult,
-        $aliasParameters
-    ) {
+        string $index,
+        string $type,
+        array $mapping,
+        string $alias,
+        array $expectedResult,
+        array $aliasParameters
+    ): void {
         if ($this->command->indexExists($index)) {
             $this->command->deleteIndex($index);
         }
@@ -210,11 +206,11 @@ class CommandTest extends TestCase
                 [
                     $index => [
                         'aliases' => [
-                            $alias => array_merge($filter, $singleExpectedRouting)
+                            $alias => [...$filter, ...$singleExpectedRouting]
                         ],
                     ],
                 ],
-                array_merge($filter, $singleRouting),
+                [...$filter, ...$singleRouting],
             ],
             [
                 $index,
@@ -224,11 +220,11 @@ class CommandTest extends TestCase
                 [
                     $index => [
                         'aliases' => [
-                            $alias => array_merge($filter, $differentRouting)
+                            $alias => [...$filter, ...$differentRouting]
                         ],
                     ],
                 ],
-                array_merge($filter, $differentRouting),
+                [...$filter, ...$differentRouting],
             ]
         ];
     }
@@ -236,7 +232,7 @@ class CommandTest extends TestCase
     /**
      * @test
      */
-    public function getIndexInfoByAlias_noAliasesSet_returnsEmptyArray()
+    public function getIndexInfoByAlias_noAliasesSet_returnsEmptyArray(): void
     {
         $testAlias = 'test';
         $expectedResult = [];
@@ -249,7 +245,7 @@ class CommandTest extends TestCase
     /**
      * @test
      */
-    public function getIndexInfoByAlias_oneIndexIsSetToAlias_returnsDataForThatIndex()
+    public function getIndexInfoByAlias_oneIndexIsSetToAlias_returnsDataForThatIndex(): void
     {
         $index = 'alias_test';
         $testAlias = 'test';
@@ -272,7 +268,7 @@ class CommandTest extends TestCase
     /**
      * @test
      */
-    public function getIndexInfoByAlias_twoIndexesAreSetToSameAlias_returnsDataForBothIndexes()
+    public function getIndexInfoByAlias_twoIndexesAreSetToSameAlias_returnsDataForBothIndexes(): void
     {
         $index1 = 'alias_test1';
         $index2 = 'alias_test2';
@@ -304,7 +300,7 @@ class CommandTest extends TestCase
     /**
      * @test
      */
-    public function getIndexesByAlias_noAliasesSet_returnsEmptyArray()
+    public function getIndexesByAlias_noAliasesSet_returnsEmptyArray(): void
     {
         $expectedResult = [];
         $testAlias = 'test';
@@ -317,7 +313,7 @@ class CommandTest extends TestCase
     /**
      * @test
      */
-    public function getIndexesByAlias_oneIndexIsSetToAlias_returnsArrayWithNameOfThatIndex()
+    public function getIndexesByAlias_oneIndexIsSetToAlias_returnsArrayWithNameOfThatIndex(): void
     {
         $index = 'alias_test';
         $testAlias = 'test';
@@ -334,7 +330,7 @@ class CommandTest extends TestCase
     /**
      * @test
      */
-    public function getIndexesByAlias_twoIndexesAreSetToSameAlias_returnsArrayWithNamesForBothIndexes()
+    public function getIndexesByAlias_twoIndexesAreSetToSameAlias_returnsArrayWithNamesForBothIndexes(): void
     {
         $index1 = 'alias_test1';
         $index2 = 'alias_test2';
@@ -362,7 +358,7 @@ class CommandTest extends TestCase
     /**
      * @test
      */
-    public function getIndexAliases_noAliasesSet_returnsEmptyArray()
+    public function getIndexAliases_noAliasesSet_returnsEmptyArray(): void
     {
         $index = 'alias_test';
         $expectedResult = [];
@@ -376,7 +372,7 @@ class CommandTest extends TestCase
      * @test
      * @todo maybe add more test with alias settings
      */
-    public function getIndexAliases_SingleAliasIsSet_returnsDataForThatAlias()
+    public function getIndexAliases_SingleAliasIsSet_returnsDataForThatAlias(): void
     {
         $index = 'alias_test';
         $testAlias = 'test_alias';
@@ -396,7 +392,7 @@ class CommandTest extends TestCase
      * @test
      * @todo maybe add more test with alias settings
      */
-    public function getIndexAliases_MultipleAliasesAreSet_returnsDataForThoseAliases()
+    public function getIndexAliases_MultipleAliasesAreSet_returnsDataForThoseAliases(): void
     {
         $index = 'alias_test';
         $testAlias1 = 'test_alias1';
@@ -418,7 +414,7 @@ class CommandTest extends TestCase
     /**
      * @test
      */
-    public function removeAlias_noAliasIsSetForIndex_returnsFalse()
+    public function removeAlias_noAliasIsSetForIndex_returnsFalse(): void
     {
         $index = 'alias_test';
         $testAlias = 'test_alias';
@@ -433,7 +429,7 @@ class CommandTest extends TestCase
     /**
      * @test
      */
-    public function removeAlias_aliasWasSetForIndex_returnsTrue()
+    public function removeAlias_aliasWasSetForIndex_returnsTrue(): void
     {
         $index = 'alias_test';
         $testAlias = 'test_alias';
@@ -449,7 +445,7 @@ class CommandTest extends TestCase
     /**
      * @test
      */
-    public function addAlias_aliasNonExistingIndex_returnsFalse()
+    public function addAlias_aliasNonExistingIndex_returnsFalse(): void
     {
         $index = 'alias_test';
         $testAlias = 'test_alias';
@@ -462,7 +458,7 @@ class CommandTest extends TestCase
     /**
      * @test
      */
-    public function addAlias_aliasExistingIndex_returnsTrue()
+    public function addAlias_aliasExistingIndex_returnsTrue(): void
     {
         $index = 'alias_test';
         $testAlias = 'test_alias';
@@ -477,7 +473,7 @@ class CommandTest extends TestCase
     /**
      * @test
      */
-    public function aliasActions_makingOperationOverNonExistingIndex_returnsFalse()
+    public function aliasActions_makingOperationOverNonExistingIndex_returnsFalse(): void
     {
         $index = 'alias_test';
         $testAlias = 'test_alias';
@@ -493,7 +489,7 @@ class CommandTest extends TestCase
     /**
      * @test
      */
-    public function aliasActions_makingOperationOverExistingIndex_returnsTrue()
+    public function aliasActions_makingOperationOverExistingIndex_returnsTrue(): void
     {
         $index = 'alias_test';
         $testAlias = 'test_alias';
@@ -508,7 +504,7 @@ class CommandTest extends TestCase
         $this->assertTrue($actualResult);
     }
 
-    public function testIndexStats()
+    public function testIndexStats(): void
     {
         $cmd = $this->command;
         if (!$cmd->indexExists('command-test')) {

@@ -19,7 +19,6 @@ use yii\helpers\Json;
  * QueryBuilder builds an Elasticsearch query based on the specification given as a [[Query]] object.
  *
  * @author Carsten Brandt <mail@cebe.cc>
- * @since 2.0
  */
 class QueryBuilder extends BaseObject
 {

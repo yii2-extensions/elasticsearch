@@ -22,7 +22,6 @@ use yii\web\YiiAsset;
  * Debugger panel that collects and displays Elasticsearch queries performed.
  *
  * @author Carsten Brandt <mail@cebe.cc>
- * @since 2.0
  */
 class DebugPanel extends Panel
 {

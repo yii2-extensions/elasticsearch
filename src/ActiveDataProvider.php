@@ -27,7 +27,6 @@ use yii\db\ActiveQueryInterface;
  * @property-read array $suggestions All suggestions results.
  *
  * @author Paul Klimov <klimov.paul@gmail.com>
- * @since 2.0.5
  */
 class ActiveDataProvider extends \yii\data\ActiveDataProvider
 {

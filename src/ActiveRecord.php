@@ -59,7 +59,6 @@ use yii\helpers\StringHelper;
  * This property is read-only.
  *
  * @author Carsten Brandt <mail@cebe.cc>
- * @since 2.0
  */
 class ActiveRecord extends BaseActiveRecord
 {
@@ -227,7 +226,6 @@ class ActiveRecord extends BaseActiveRecord
 
     /**
      * @return array|null An explanation for each hit on how its score was computed.
-     * @since 2.0.5
      */
     public function getExplanation()
     {
@@ -628,7 +626,6 @@ class ActiveRecord extends BaseActiveRecord
      * @see updateAll()
      * @see updateAllCounters()
      * @see deleteAll()
-     * @since 2.0.4
      */
     protected static function primaryKeysByCondition($condition)
     {

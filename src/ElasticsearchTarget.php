@@ -23,7 +23,6 @@ use yii\log\Target;
  * ElasticsearchTarget stores log messages in a Elasticsearch index.
  *
  * @author Eugene Terentev <eugene@terentev.net>
- * @since 2.0.5
  */
 class ElasticsearchTarget extends Target
 {

@@ -21,7 +21,6 @@ use yii\helpers\Json;
  * [Elasticsearch guide](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html).
  *
  * @author Konstantin Sirotkin <beowulfenator@gmail.com>
- * @since 2.0.5
  */
 class BulkCommand extends Component
 {

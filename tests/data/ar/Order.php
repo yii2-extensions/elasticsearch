@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace yiiunit\extensions\elasticsearch\data\ar;
 
 use yii\elasticsearch\ActiveQuery;
@@ -52,7 +54,7 @@ class Order extends ActiveRecord
     public function getExpensiveItemsUsingViaWithCallable()
     {
         return $this->hasMany(Item::className(), ['_id' => 'item_id'])
-            ->via('orderItems', function (ActiveQuery $q) {
+            ->via('orderItems', function (ActiveQuery $q): void {
                 $q->where(['>=', 'subtotal', 10]);
             });
     }
@@ -60,7 +62,7 @@ class Order extends ActiveRecord
     public function getCheapItemsUsingViaWithCallable()
     {
         return $this->hasMany(Item::className(), ['_id' => 'item_id'])
-            ->via('orderItems', function (ActiveQuery $q) {
+            ->via('orderItems', function (ActiveQuery $q): void {
                 $q->where(['<', 'subtotal', 10]);
             });
     }
@@ -74,7 +76,7 @@ class Order extends ActiveRecord
     public function getItemsInOrder1()
     {
         return $this->hasMany(Item::className(), ['_id' => 'item_id'])
-            ->via('orderItems', function ($q) {
+            ->via('orderItems', function ($q): void {
                 $q->orderBy(['subtotal' => SORT_ASC]);
             })->orderBy('name');
     }
@@ -82,7 +84,7 @@ class Order extends ActiveRecord
     public function getItemsInOrder2()
     {
         return $this->hasMany(Item::className(), ['_id' => 'item_id'])
-            ->via('orderItems', function ($q) {
+            ->via('orderItems', function ($q): void {
                 $q->orderBy(['subtotal' => SORT_DESC]);
             })->orderBy('name');
     }
@@ -98,7 +100,7 @@ class Order extends ActiveRecord
      * sets up the index for this record
      * @param Command $command
      */
-    public static function setUpMapping($command)
+    public static function setUpMapping($command): void
     {
         $command->setMapping(static::index(), static::type(), [
             'properties' => [

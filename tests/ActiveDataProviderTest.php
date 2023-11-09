@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace yiiunit\extensions\elasticsearch;
 
 use yii\elasticsearch\ActiveDataProvider;
@@ -46,7 +48,7 @@ class ActiveDataProviderTest extends TestCase
 
     // Tests :
 
-    public function testQuery()
+    public function testQuery(): void
     {
         $query = new Query();
         $query->from(Customer::index(), 'customer');
@@ -69,7 +71,7 @@ class ActiveDataProviderTest extends TestCase
         $this->assertEquals(1, count($models));
     }
 
-    public function testGetAggregations()
+    public function testGetAggregations(): void
     {
         $provider = new ActiveDataProvider([
             'query' => Customer::find()->addAggregate('agg_status', [
@@ -91,7 +93,7 @@ class ActiveDataProviderTest extends TestCase
         $this->assertEquals(1, $status_2['doc_count']);
     }
 
-    public function testActiveQuery()
+    public function testActiveQuery(): void
     {
         $provider = new ActiveDataProvider([
             'query' => Customer::find(),
@@ -111,7 +113,7 @@ class ActiveDataProviderTest extends TestCase
         $this->assertEquals(1, count($models));
     }
 
-    public function testNonexistentIndex()
+    public function testNonexistentIndex(): void
     {
         $query = new Query();
         $query->from('nonexistent', 'nonexistent');
@@ -126,7 +128,7 @@ class ActiveDataProviderTest extends TestCase
         $models = $provider->getModels();
     }
 
-    public function testRefresh()
+    public function testRefresh(): void
     {
         $dataProvider = new ActiveDataProvider([
             'query' => Customer::find(),

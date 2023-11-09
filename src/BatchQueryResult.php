@@ -39,7 +39,6 @@ use yii\base\BaseObject;
  * ```
  *
  * @author Konstantin Sirotkin <beowulfenator@gmail.com>
- * @since 2.0.4
  */
 class BatchQueryResult extends BaseObject implements \Iterator
 {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace yiiunit\extensions\elasticsearch\data\ar;
 
 use yii\elasticsearch\Command;
@@ -22,7 +24,7 @@ class Item extends ActiveRecord
      * sets up the index for this record
      * @param Command $command
      */
-    public static function setUpMapping($command)
+    public static function setUpMapping($command): void
     {
         $command->setMapping(static::index(), static::type(), [
             "properties" => [

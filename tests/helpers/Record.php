@@ -1,10 +1,12 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @author Aleksandar Panic
  **/
 
 namespace yii\elasticsearch\tests\helpers;
-
 
 use yii\elasticsearch\ActiveRecord;
 
@@ -31,7 +33,7 @@ class Record
         return $results;
     }
 
-    public static function initIndex($class, $db)
+    public static function initIndex($class, $db): void
     {
         $index = $class::index();
 
@@ -43,7 +45,7 @@ class Record
         $class::setUpMapping($db->createCommand());
     }
 
-    public static function refreshIndex($class, $db)
+    public static function refreshIndex($class, $db): void
     {
         $db->createCommand()->refreshIndex($class::index());
     }

@@ -75,7 +75,6 @@ use yii\db\ActiveRelationTrait;
  * > Note: Currently [[with]] is not supported in combination with [[asArray]].
  *
  * @author Carsten Brandt <mail@cebe.cc>
- * @since 2.0
  */
 class ActiveQuery extends Query implements ActiveQueryInterface
 {
@@ -172,7 +171,6 @@ class ActiveQuery extends Query implements ActiveQueryInterface
      * Converts found rows into model instances
      * @param array $rows
      * @return array|ActiveRecord[]
-     * @since 2.0.4
      */
     private function createModels($rows)
     {
@@ -219,7 +217,6 @@ class ActiveQuery extends Query implements ActiveQueryInterface
 
     /**
      * @inheritdoc
-     * @since 2.0.4
      */
     public function populate($rows)
     {

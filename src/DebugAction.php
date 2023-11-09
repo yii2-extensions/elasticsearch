@@ -21,7 +21,6 @@ use Yii;
  * Debug Action is used by [[DebugPanel]] to perform Elasticsearch queries using ajax.
  *
  * @author Carsten Brandt <mail@cebe.cc>
- * @since 2.0
  */
 class DebugAction extends Action
 {

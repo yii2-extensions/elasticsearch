@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace yiiunit\extensions\elasticsearch;
 
 use yii\elasticsearch\Query;
@@ -45,7 +47,7 @@ class QueryTest extends TestCase
         $command->refreshIndex('query-test');
     }
 
-    public function testFields()
+    public function testFields(): void
     {
         $query = new Query;
         $query->from('query-test', 'user');
@@ -80,7 +82,7 @@ class QueryTest extends TestCase
         $this->assertArrayHasKey('_id', $result);
     }
 
-    public function testOne()
+    public function testOne(): void
     {
         $query = new Query;
         $query->from('query-test', 'user');
@@ -104,7 +106,7 @@ class QueryTest extends TestCase
         $this->assertFalse($result);
     }
 
-    public function testAll()
+    public function testAll(): void
     {
         $query = new Query;
         $query->from('query-test', 'user');
@@ -154,7 +156,7 @@ class QueryTest extends TestCase
         ], array_keys($results));
     }
 
-    public function testScalar()
+    public function testScalar(): void
     {
         $query = new Query;
         $query->from('query-test', 'user');
@@ -167,7 +169,7 @@ class QueryTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function testColumn()
+    public function testColumn(): void
     {
         $query = new Query;
         $query->from('query-test', 'user');
@@ -181,7 +183,7 @@ class QueryTest extends TestCase
 
     }
 
-    public function testAndWhere() {
+    public function testAndWhere(): void {
         $query = new Query;
         $query->where(1)
             ->andWhere(2)
@@ -191,7 +193,7 @@ class QueryTest extends TestCase
         $this->assertEquals($expected, $query->where);
     }
 
-    public function testOrWhere() {
+    public function testOrWhere(): void {
         $query = new Query;
         $query->where(1)
             ->orWhere(2)
@@ -201,7 +203,7 @@ class QueryTest extends TestCase
         $this->assertEquals($expected, $query->where);
     }
 
-    public function testFilterWhere()
+    public function testFilterWhere(): void
     {
         // should work with hash format
         $query = new Query;
@@ -252,7 +254,7 @@ class QueryTest extends TestCase
         $this->assertEquals($condition, $query->where);
     }
 
-    public function testFilterWhereRecursively()
+    public function testFilterWhereRecursively(): void
     {
         $query = new Query();
         $query->filterWhere([
@@ -269,7 +271,7 @@ class QueryTest extends TestCase
 
     // TODO test complex where() every edge of QueryBuilder
 
-    public function testOrder()
+    public function testOrder(): void
     {
         $query = new Query;
         $query->orderBy('team');
@@ -288,7 +290,7 @@ class QueryTest extends TestCase
         $this->assertEquals(['team' => SORT_ASC, 'company' => SORT_DESC, 'age' => SORT_ASC], $query->orderBy);
     }
 
-    public function testLimitOffset()
+    public function testLimitOffset(): void
     {
         $query = new Query;
         $query->limit(10)->offset(5);
@@ -300,7 +302,7 @@ class QueryTest extends TestCase
     /**
      * @since 2.0.4
      */
-    public function testBatch()
+    public function testBatch(): void
     {
         $names = [
             'user1',
@@ -384,7 +386,7 @@ class QueryTest extends TestCase
      * @group postfilter
      * @since 2.0.5
      */
-    public function testPostFilter()
+    public function testPostFilter(): void
     {
         $postFilter = [
             'term' => ['status' => 2]
@@ -402,7 +404,7 @@ class QueryTest extends TestCase
      * @group explain
      * @since 2.0.5
      */
-    public function testExplain()
+    public function testExplain(): void
     {
         $query = new Query();
         $query->from('query-test', 'user');
@@ -416,7 +418,7 @@ class QueryTest extends TestCase
      * @group explain
      * @since 2.0.5
      */
-    public function testNoExplain()
+    public function testNoExplain(): void
     {
         $query = new Query();
         $query->from('query-test', 'user');
@@ -424,7 +426,7 @@ class QueryTest extends TestCase
         $this->assertFalse(array_key_exists('_explanation', $result['hits']['hits'][0]));
     }
 
-    public function testQueryWithWhere()
+    public function testQueryWithWhere(): void
     {
         // make sure that both `query()` and `where()` work at the same time
         $query = new Query();
@@ -437,7 +439,7 @@ class QueryTest extends TestCase
         $this->assertEquals(1, $total);
     }
 
-    public function testSuggest()
+    public function testSuggest(): void
     {
         $cmd = $this->getConnection()->createCommand();
         $cmd->index = "query-test";
@@ -452,7 +454,7 @@ class QueryTest extends TestCase
         $this->assertCount(5, $result['customer_name'][0]['options']);
     }
 
-    public function testRuntimeMappings()
+    public function testRuntimeMappings(): void
     {
         // Check that Elasticsearch is version 7.11.0 or later before running this test
         $elasticsearchInfo = $this->getConnection()->get('/');

@@ -28,7 +28,6 @@ use yii\test\BaseActiveFixture;
  *
  * @author Carsten Brandt <mail@cebe.cc>
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @since 2.0.2
  */
 class ActiveFixture extends BaseActiveFixture
 {

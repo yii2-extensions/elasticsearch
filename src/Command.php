@@ -22,7 +22,6 @@ use yii\helpers\Json;
  * for details on these commands.
  *
  * @author Carsten Brandt <mail@cebe.cc>
- * @since 2.0
  */
 class Command extends Component
 {
@@ -508,7 +507,6 @@ class Command extends Component
      * @throws Exception
      * @throws \yii\base\InvalidConfigException
      * @see https://www.elasticsearch.org/guide/en/elasticsearch/reference/current/indices-update-settings.html
-     * @since 2.0.4
      */
     public function updateSettings($index, $setting, $options = [])
     {
@@ -550,7 +548,6 @@ class Command extends Component
      * @throws Exception
      * @throws \yii\base\InvalidConfigException
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-update-settings.html#update-settings-analysis
-     * @since 2.0.4
      */
     public function updateAnalyzers($index, $setting, $options = [])
     {
@@ -594,7 +591,6 @@ class Command extends Component
      * @throws Exception
      * @throws \yii\base\InvalidConfigException
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-scroll.html
-     * @since 2.0.4
      */
     public function scroll($options = [])
     {
@@ -615,7 +611,6 @@ class Command extends Component
      * @throws Exception
      * @throws \yii\base\InvalidConfigException
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-scroll.html
-     * @since 2.0.4
      */
     public function clearScroll($options = [])
     {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace yiiunit\extensions\elasticsearch;
 
 use yii\elasticsearch\Query;
@@ -31,7 +33,7 @@ class QueryBuilderTest extends TestCase
         $this->prepareDbData();
     }
 
-    private function prepareDbData()
+    private function prepareDbData(): void
     {
         $command = $this->getConnection()->createCommand();
         $command->setMapping('builder-test', 'article', [
@@ -49,7 +51,7 @@ class QueryBuilderTest extends TestCase
         $command->refreshIndex('builder-test');
     }
 
-    public function testQueryBuilderRespectsQuery()
+    public function testQueryBuilderRespectsQuery(): void
     {
         $queryParts = ['field' => ['title' => 'yii']];
         $queryBuilder = new QueryBuilder($this->getConnection());
@@ -65,7 +67,7 @@ class QueryBuilderTest extends TestCase
     /**
      * @group postfilter
      */
-    public function testQueryBuilderPostFilterQuery()
+    public function testQueryBuilderPostFilterQuery(): void
     {
         $postFilter = [
             'bool' => [
@@ -81,7 +83,7 @@ class QueryBuilderTest extends TestCase
         $this->assertSame($postFilter, $build['queryParts']['post_filter']);
     }
 
-    public function testYiiCanBeFoundByQuery()
+    public function testYiiCanBeFoundByQuery(): void
     {
         $queryParts = ['term' => ['title' => 'yii']];
         $query = new Query();
@@ -92,7 +94,7 @@ class QueryBuilderTest extends TestCase
         $this->assertEquals(2, $total);
     }
 
-    public function testMinScore()
+    public function testMinScore(): void
     {
         $queryParts = [
             'function_score' => [
@@ -129,7 +131,7 @@ class QueryBuilderTest extends TestCase
         $this->assertEquals(0, $total);
     }
 
-    public function testMltSearch()
+    public function testMltSearch(): void
     {
         $queryParts = [
             "more_like_this" => [
@@ -147,7 +149,7 @@ class QueryBuilderTest extends TestCase
         $this->assertEquals(3, $total);
     }
 
-    public function testHalfBoundedRange()
+    public function testHalfBoundedRange(): void
     {
         // >= 2010-01-15, 3 results
         $result = (new Query())
@@ -214,7 +216,7 @@ class QueryBuilderTest extends TestCase
         $this->assertEquals(2, $total);
     }
 
-    public function testNotCondition()
+    public function testNotCondition(): void
     {
         $titles = [
             'yii',
@@ -230,7 +232,7 @@ class QueryBuilderTest extends TestCase
         $this->assertEquals(2, $total);
     }
 
-    public function testInCondition()
+    public function testInCondition(): void
     {
         $titles = [
             'yii',
@@ -247,7 +249,7 @@ class QueryBuilderTest extends TestCase
         $this->assertEquals(3, $total);
     }
 
-    public function testBuildNotCondition()
+    public function testBuildNotCondition(): void
     {
         $db = $this->getConnection();
         $qb = new QueryBuilder($db);
@@ -266,7 +268,7 @@ class QueryBuilderTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testBuildInCondition()
+    public function testBuildInCondition(): void
     {
         $db = $this->getConnection();
         $qb = new QueryBuilder($db);
@@ -281,7 +283,7 @@ class QueryBuilderTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testBuildMatchCondition()
+    public function testBuildMatchCondition(): void
     {
         $result = (new Query())
             ->from('builder-test', 'article')
