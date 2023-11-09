@@ -1,15 +1,22 @@
 {
-    "name": "yii2/template",
-    "type": "library",
-    "description": "_____",
+    "name": "yii2-extensions/elasticsearch",
+    "description": "Elasticsearch integration and ActiveRecord for the Yii framework.",
     "keywords": [
-        "_____"
+        "yii2",
+        "elasticsearch",
+        "active-record",
+        "search",
+        "fulltext"
     ],
+    "type": "yii2-extension",
     "license": "mit",
     "minimum-stability": "dev",
-    "prefer-stable": true,
     "require": {
         "php": ">=8.1",
+        "ext-curl": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "yii2-extensions/debug": "dev-main",
         "yiisoft/yii2": "^2.2"
     },
     "require-dev": {
@@ -19,12 +26,7 @@
     },
     "autoload": {
         "psr-4": {
-            "yii\\template\\": "src"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "yii\\template\\tests\\": "tests"
+            "yii\\elasticsearch\\": "src"
         }
     },
     "extra": {

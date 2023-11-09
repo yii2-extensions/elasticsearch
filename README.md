@@ -1,53 +1,61 @@
 <p align="center">
-    <a href="https://github.com/yii2-extensions/template" target="_blank">
-        <img src="https://www.yiiframework.com/image/yii_logo_light.svg" height="100px;">
+    <a href="https://www.elastic.co/products/elasticsearch" target="_blank" rel="external">
+        <img src="https://images.contentstack.io/v3/assets/bltefdd0b53724fa2ce/blt280217a63b82a734/5bbdaacf63ed239936a7dd56/elastic-logo.svg" height="80px">
     </a>
-    <h1 align="center">Yii2-Template.</h1>
+    <h1 align="center">Elasticsearch Query and ActiveRecord.</h1>
     <br>
 </p>
 
-<p align="center">
-    <a href="https://www.php.net/releases/8.1/en.php" target="_blank">
-        <img src="https://img.shields.io/badge/PHP-%3E%3D8.1-787CB5" alt="php-version">
-    </a>
-    <a href="https://github.com/yiisoft/yii2/tree/2.2" target="_blank">
-        <img src="https://img.shields.io/badge/Yii2%20version-2.2-blue" alt="yii2-version">
-    </a>
-    <a href="https://github.com/yii2-extensions/template/actions/workflows/build.yml" target="_blank">
-        <img src="https://github.com/yii2-extensions/template/actions/workflows/build.yml/badge.svg" alt="PHPUnit">
-    </a>
-    <a href="https://codecov.io/gh/yii2-extensions/template" target="_blank">
-        <img src="https://codecov.io/gh/yii2-extensions/template/branch/main/graph/badge.svg?token=MF0XUGVLYC" alt="Codecov">
-    </a>
-    <a href="https://github.com/yii2-extensions/template/actions/workflows/static.yml" target="_blank">
-        <img src="https://github.com/yii2-extensions/gii/actions/workflows/static.yml/badge.svg" alt="PHPStan">
-    </a>
-    <a href="https://github.com/yii2-extensions/template/actions/workflows/static.yml" target="_blank">
-        <img src="https://img.shields.io/badge/PHPStan%20level-2-blue" alt="PHPStan level">
-    </a>    
-    <a href="https://github.styleci.io/repos/698621511?branch=main" target="_blank">
-        <img src="https://github.styleci.io/repos/698621511/shield?branch=main" alt="Code style">
-    </a>        
-</p>
+This extension provides the [Elasticsearch](https://www.elastic.co/products/elasticsearch) integration for the [Yii framework 2.0](https://www.yiiframework.com).
+It includes basic querying/search support and also implements the `ActiveRecord` pattern that allows you to store active
+records in Elasticsearch.
 
-## Requirements
+For license information check the [LICENSE](LICENSE.md)-file.
 
-The minimun version of `PHP` required by this package is `PHP 8.1`.
+Documentation is at [docs/guide/README.md](docs/guide/README.md).
 
-For install this package, you need [composer](https://getcomposer.org/).
+[![Latest Stable Version](https://poser.pugx.org/yiisoft/yii2-elasticsearch/v/stable.png)](https://packagist.org/packages/yiisoft/yii2-elasticsearch)
+[![Total Downloads](https://poser.pugx.org/yiisoft/yii2-elasticsearch/downloads.png)](https://packagist.org/packages/yiisoft/yii2-elasticsearch)
+[![Build Status](https://travis-ci.com/yiisoft/yii2-elasticsearch.svg?branch=master)](https://travis-ci.com/yiisoft/yii2-elasticsearch)
+[![codecov](https://codecov.io/gh/yiisoft/yii2-elasticsearch/graph/badge.svg?token=oi71bPc1SU)](https://codecov.io/gh/yiisoft/yii2-elasticsearch)
 
-## Usage
+Requirements
+------------
 
-[Check the documentation docs](/docs/README.md) to learn about usage.
+- PHP 8.1 or higher.
 
-## Testing
+Depending on the version of Elasticsearch you are using you need a different version of this extension.
 
-[Check the documentation testing](/docs/testing.md) to learn about testing.
+- For Elasticsearch 1.6.0 to 1.7.6 use extension version 2.0.x
+- For Elasticsearch 5.x or above use extension version 2.1.x
 
-## Our social networks
+Installation
+------------
 
-[![Twitter](https://img.shields.io/badge/twitter-follow-1DA1F2?logo=twitter&logoColor=1DA1F2&labelColor=555555?style=flat)](https://twitter.com/Terabytesoftw)
+The preferred way to install this extension is through [composer](https://getcomposer.org/download/):
 
-## License
 
-The MIT License. Please see [License File](LICENSE.md) for more information.
+```
+composer require --prefer-dist yiisoft/yii2-elasticsearch:"~2.1.0"
+```
+
+Configuration
+-------------
+
+To use this extension, you have to configure the Connection class in your application configuration:
+
+```php
+return [
+    //....
+    'components' => [
+        'elasticsearch' => [
+            'class' => 'yii\elasticsearch\Connection',
+            'nodes' => [
+                ['http_address' => '127.0.0.1:9200'],
+                // configure more hosts if you have a cluster
+            ],
+            'dslVersion' => 7, // default is 5
+        ],
+    ]
+];
+```

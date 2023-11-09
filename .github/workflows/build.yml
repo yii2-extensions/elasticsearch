@@ -22,10 +22,68 @@ on:
 name: build
 
 jobs:
-  phpunit:
-    uses: yiisoft/actions/.github/workflows/phpunit.yml@master
-    with:
-      os: >-
-        ['ubuntu-latest', 'windows-latest']
-      php: >-
-        ['8.1', '8.2', '8.3']
+  tests:
+    name: PHP ${{ matrix.php }} / ES ${{ matrix.es }}
+
+    env:
+      extensions: curl, mbstring, dom, intl
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php:
+          - 8.1
+          - 8.2
+          - 8.3
+
+        es:
+          - 8.1.3
+          - 7.14.0
+          - 7.7.0
+          - 6.8.9
+          - 5.6.16
+
+    steps:
+      - name: Service elastisearch 8.1.3.
+        if: matrix.es == '8.1.3'
+        run: |
+          docker network create somenetwork
+          docker run -d --name elasticsearch --net somenetwork -p 9200:9200 -e "http.publish_host=127.0.0.1" -e "transport.host=127.0.0.1" -e "indices.id_field_data.enabled=true" -e "xpack.security.enabled=false" elasticsearch:${{ matrix.es }}
+
+      - name: Service elastisearch < 8.1.3.
+        if: matrix.es != '8.1.3'
+        run: |
+          docker network create somenetwork
+          docker run -d --name elasticsearch --net somenetwork -p 9200:9200 -e "http.publish_host=127.0.0.1" -e "transport.host=127.0.0.1" elasticsearch:${{ matrix.es }}
+
+      - name: Checkout.
+        uses: actions/checkout@v3
+
+      - name: Install PHP with extensions.
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: ${{ env.extensions }}
+          ini-values: date.timezone='UTC'
+
+      - name: Install dependencies with composer.
+        run: composer update --prefer-dist --no-interaction --no-progress --optimize-autoloader
+
+      - name: Wait for Elasticsearch server to start.
+        run: wget --retry-connrefused --waitretry=3 --timeout=30 -t 10 -O /dev/null http://127.0.0.1:9200
+
+      - name: Run tests with phpunit.
+        if: matrix.php != '8.1'
+        run: ES_VERSION=${{ matrix.es }} vendor/bin/phpunit --colors=always
+
+      - name: Run tests with phpunit and generate coverage.
+        if: matrix.php == '8.1'
+        run: ES_VERSION=${{ matrix.es }} vendor/bin/phpunit --coverage-clover=coverage.xml --colors=always
+
+      - name: Upload coverage to Codecov.
+        if: matrix.php == '8.1'
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
