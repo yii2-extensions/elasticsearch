@@ -394,7 +394,7 @@ class Connection extends Component
     {
         if (!is_string($path)) {
             $url = implode('/', array_map(function ($a) {
-                return urlencode(is_array($a) ? implode(',', $a) : $a);
+                return urlencode(is_array($a) ? implode(',', $a) : (string) $a);
             }, $path));
             if (!empty($options)) {
                 $url .= '?' . http_build_query($options);
