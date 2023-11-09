@@ -116,7 +116,7 @@ class CommandTest extends TestCase
     /**
      * @return array
      */
-    public function provideDataForGetAliasInfo()
+    public static function provideDataForGetAliasInfo()
     {
         $index = 'alias_test';
         $type = 'alias_test_type';

@@ -21,7 +21,7 @@
     },
     "require-dev": {
         "maglnet/composer-require-checker": "^4.6",
-        "phpunit/phpunit": "^10.2",
+        "phpunit/phpunit": "^10.4",
         "yii2-extensions/phpstan": "dev-main"
     },
     "autoload": {
@@ -30,7 +30,9 @@
         }
     },
     "autoload-dev": {
-        "psr-4": { "yiiunit\\extensions\\elasticsearch\\": "tests" }
+        "psr-4": {
+            "yiiunit\\extensions\\elasticsearch\\": "tests"
+        }
     },
     "extra": {
         "branch-alias": {

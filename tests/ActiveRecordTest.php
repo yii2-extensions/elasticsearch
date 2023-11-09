@@ -739,7 +739,7 @@ class ActiveRecordTest extends TestCase
     // TODO test AR with not mapped PK
 
 
-    public function illegalValuesForFindByCondition()
+    public static function illegalValuesForFindByCondition()
     {
         return [
             [['_id' => ['`id`=`id` and 1' => 1]], null],

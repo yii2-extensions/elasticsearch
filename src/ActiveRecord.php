@@ -66,9 +66,6 @@ class ActiveRecord extends BaseActiveRecord
     private $_highlight;
     private $_explanation;
 
-    final public function __construct()
-    {
-    }
 
     /**
      * Returns the database connection used by this AR class.

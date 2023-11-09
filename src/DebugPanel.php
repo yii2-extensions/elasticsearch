@@ -19,13 +19,14 @@ use yii\web\YiiAsset;
  * Debugger panel that collects and displays Elasticsearch queries performed.
  *
  * @author Carsten Brandt <mail@cebe.cc>
+ * @since 2.0
  */
 class DebugPanel extends Panel
 {
     public $db = 'elasticsearch';
 
 
-    public function init()
+    public function init(): void
     {
         $this->actions['elasticsearch-query'] = [
             'class' => 'yii\\elasticsearch\\DebugAction',
