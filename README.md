@@ -1,8 +1,8 @@
 <p align="center">
-    <a href="https://github.com/yii2-extensions/template" target="_blank">
+    <a href="https://github.com/yii2-extensions/elasticsearch" target="_blank">
         <img src="https://www.yiiframework.com/image/yii_logo_light.svg" height="100px;">
     </a>
-    <h1 align="center">Yii2-Template.</h1>
+    <h1 align="center">Elasticsearch Query and ActiveRecord.</h1>
     <br>
 </p>
 
@@ -13,32 +13,67 @@
     <a href="https://github.com/yiisoft/yii2/tree/2.2" target="_blank">
         <img src="https://img.shields.io/badge/Yii2%20version-2.2-blue" alt="yii2-version">
     </a>
-    <a href="https://github.com/yii2-extensions/template/actions/workflows/build.yml" target="_blank">
-        <img src="https://github.com/yii2-extensions/template/actions/workflows/build.yml/badge.svg" alt="PHPUnit">
+    <a href="https://github.com/yii2-extensions/elasticsearch/actions/workflows/build.yml" target="_blank">
+        <img src="https://github.com/yii2-extensions/elasticsearch/actions/workflows/build.yml/badge.svg" alt="PHPUnit">
     </a>
-    <a href="https://codecov.io/gh/yii2-extensions/template" target="_blank">
-        <img src="https://codecov.io/gh/yii2-extensions/template/branch/main/graph/badge.svg?token=MF0XUGVLYC" alt="Codecov">
+    <a href="https://codecov.io/gh/yii2-extensions/elasticsearch" target="_blank">
+        <img src="https://codecov.io/gh/yii2-extensions/elasticsearch/branch/main/graph/badge.svg?token=MF0XUGVLYC" alt="Codecov">
     </a>
-    <a href="https://github.com/yii2-extensions/template/actions/workflows/static.yml" target="_blank">
-        <img src="https://github.com/yii2-extensions/gii/actions/workflows/static.yml/badge.svg" alt="PHPStan">
+    <a href="https://github.com/yii2-extensions/elasticsearch/actions/workflows/static.yml" target="_blank">
+        <img src="https://github.com/yii2-extensions/elasticsearch/actions/workflows/static.yml/badge.svg" alt="PHPStan">
     </a>
-    <a href="https://github.com/yii2-extensions/template/actions/workflows/static.yml" target="_blank">
-        <img src="https://img.shields.io/badge/PHPStan%20level-2-blue" alt="PHPStan level">
+    <a href="https://github.com/yii2-extensions/elasticsearch/actions/workflows/static.yml" target="_blank">
+        <img src="https://img.shields.io/badge/PHPStan%20level-1-blue" alt="PHPStan level">
     </a>    
-    <a href="https://github.styleci.io/repos/698621511?branch=main" target="_blank">
-        <img src="https://github.styleci.io/repos/698621511/shield?branch=main" alt="Code style">
-    </a>        
+    <a href="https://github.styleci.io/repos/710193992?branch=main" target="_blank">
+        <img src="https://github.styleci.io/repos/710193992/shield?branch=main" alt="Code style">
+    </a>    
 </p>
 
-## Requirements
+This extension provides the [Elasticsearch](https://www.elastic.co/products/elasticsearch) integration for the [Yii framework 2.0](https://www.yiiframework.com).
+It includes basic querying/search support and also implements the `ActiveRecord` pattern that allows you to store active
+records in Elasticsearch.
 
-The minimun version of `PHP` required by this package is `PHP 8.1`.
+Requirements
+------------
 
-For install this package, you need [composer](https://getcomposer.org/).
+- PHP 8.1 or higher.
 
-## Usage
+Depending on the version of Elasticsearch you are using you need a different version of this extension.
 
-[Check the documentation docs](/docs/README.md) to learn about usage.
+- For Elasticsearch 1.6.0 to 1.7.6 use extension version 2.0.x
+- For Elasticsearch 5.x or above use extension version 2.1.x
+
+Installation
+------------
+
+The preferred way to install this extension is through [composer](https://getcomposer.org/download/):
+
+
+```
+composer require --prefer-dist yiisoft/yii2-elasticsearch:"~2.1.0"
+```
+
+Configuration
+-------------
+
+To use this extension, you have to configure the Connection class in your application configuration:
+
+```php
+return [
+    //....
+    'components' => [
+        'elasticsearch' => [
+            'class' => 'yii\elasticsearch\Connection',
+            'nodes' => [
+                ['http_address' => '127.0.0.1:9200'],
+                // configure more hosts if you have a cluster
+            ],
+            'dslVersion' => 7, // default is 5
+        ],
+    ]
+];
+```
 
 ## Testing
 
