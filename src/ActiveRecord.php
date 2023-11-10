@@ -83,9 +83,9 @@ class ActiveRecord extends BaseActiveRecord
      * By default, the "elasticsearch" application component is used as the database connection.
      * You may override this method if you want to use a different database connection.
      *
-     * @return Connection the database connection used by this AR class.
-     *
      * @throws InvalidConfigException
+     *
+     * @return Connection the database connection used by this AR class.
      */
     public static function getDb()
     {
@@ -95,9 +95,9 @@ class ActiveRecord extends BaseActiveRecord
     /**
      * @inheritdoc
      *
-     * @return ActiveQuery the newly created [[ActiveQuery]] instance.
-     *
      * @throws InvalidConfigException
+     *
+     * @return ActiveQuery the newly created [[ActiveQuery]] instance.
      */
     public static function find()
     {
@@ -174,10 +174,10 @@ class ActiveRecord extends BaseActiveRecord
      * Please refer to the [Elasticsearch documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html)
      * for more details on these options.
      *
-     * @return static|null The record instance or null if it was not found.
-     *
      * @throws InvalidConfigException
      * @throws \yii\elasticsearch\Exception
+     *
+     * @return static|null The record instance or null if it was not found.
      */
     public static function get(mixed $primaryKey, array $options = []): static|null
     {
@@ -209,10 +209,10 @@ class ActiveRecord extends BaseActiveRecord
      * Please refer to the [Elasticsearch documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html)
      * for more details on these options.
      *
-     * @return array The record instances, or empty array if nothing was found
-     *
      * @throws InvalidConfigException
      * @throws \yii\elasticsearch\Exception
+     *
+     * @return array The record instances, or empty array if nothing was found
      */
     public static function mget(array $primaryKeys, array $options = []): array
     {
@@ -455,9 +455,9 @@ class ActiveRecord extends BaseActiveRecord
      *  - `_type`: the type this record is stored in.
      *  - `_Index`: the index this record is stored in.
      *
-     * @return static the newly created active record
-     *
      * @throws InvalidConfigException
+     *
+     * @return static the newly created active record
      */
     public static function instantiate($row): static
     {
@@ -510,10 +510,10 @@ class ActiveRecord extends BaseActiveRecord
      *
      * By default, the `op_type` is set to `create` if a model primary key is present.
      *
-     * @return bool whether the attributes are valid and the record is inserted successfully.
-     *
      * @throws InvalidConfigException
      * @throws \yii\elasticsearch\Exception
+     *
+     * @return bool whether the attributes are valid and the record is inserted successfully.
      */
     public function insert($runValidation = true, $attributes = null, array $options = [ ]): bool
     {
@@ -590,13 +590,13 @@ class ActiveRecord extends BaseActiveRecord
      *   Make sure the record has been fetched with a [[version]] before. This is only the case
      *   for records fetched via [[get()]] and [[mget()]] by default. For normal queries, the `_version` field has to be fetched explicitly.
      *
-     * @return bool|int the number of rows affected, or false if validation fails
-     * or [[beforeSave()]] stops the updating process.
-     *
      * @throws InvalidArgumentException if no [[version]] is available and optimistic locking is enabled.
      * @throws Exception
      * @throws InvalidConfigException in case update failed.
      * @throws StaleObjectException if optimistic, locking is enabled and the data being updated is outdated.
+     *
+     * @return bool|int the number of rows affected, or false if validation fails
+     * or [[beforeSave()]] stops the updating process.
      */
     public function update($runValidation = true, $attributeNames = null, array $options = []): bool|int
     {
@@ -611,11 +611,11 @@ class ActiveRecord extends BaseActiveRecord
      * @param array $options options given in this parameter are passed to Elasticsearch
      * as request URI parameters. See [[update()]] for details.
      *
-     * @return false|int the number of rows affected, or false if [[beforeSave()]] stops the updating process.
-     *
      * @throws Exception in case update failed.
      * @throws InvalidConfigException
      * @throws StaleObjectException if optimistic, locking is enabled and the data being updated is outdated.
+     *
+     * @return false|int the number of rows affected, or false if [[beforeSave()]] stops the updating process.
      *
      * @see update()
      */
@@ -684,9 +684,9 @@ class ActiveRecord extends BaseActiveRecord
      *
      * @param array $condition please refer to [[ActiveQuery::where()]] on how to specify this parameter
      *
-     * @return array primary keys that correspond to given conditions
-     *
      * @throws InvalidConfigException
+     *
+     * @return array primary keys that correspond to given conditions
      *
      * @see updateAllCounters()
      * @see deleteAll()
@@ -721,11 +721,10 @@ class ActiveRecord extends BaseActiveRecord
      * @param array $condition the conditions that will be passed to the `where()` method when building the query.
      * Please refer to [[ActiveQuery::where()]] on how to specify this parameter.
      *
-     * @return int the number of rows updated
-     *
      * @throws InvalidConfigException
-     *
      * @throws Exception on error.*@see [[ActiveRecord::primaryKeysByCondition()]]
+     *
+     * @return int the number of rows updated
      */
     public static function updateAll($attributes, $condition = []): int
     {
@@ -774,10 +773,10 @@ class ActiveRecord extends BaseActiveRecord
      * @param array $condition the conditions that will be passed to the `where()` method when building the query.
      * Please refer to [[ActiveQuery::where()]] on how to specify this parameter.
      *
-     * @return int the number of rows updated
-     *
      * @throws InvalidConfigException
      * @throws Exception on error.
+     *
+     * @return int the number of rows updated
      *
      * @see [[ActiveRecord::primaryKeysByCondition()]]
      */
@@ -854,13 +853,13 @@ class ActiveRecord extends BaseActiveRecord
      *   for records fetched via [[get()]] and [[mget()]] by default.
      * For normal queries, the `_version` field has to be fetched explicitly.
      *
-     * @return bool|int the number of rows deleted, or false if the deletion is unsuccessful for some reason.
-     *
      * @throws StaleObjectException if optimistic, locking is enabled and the data being deleted is outdated.
      * @throws Exception
      * @throws InvalidConfigException in case delete failed.
      *
      * Note that it is possible the number of rows deleted is 0, even though the deletion execution is successful.
+     *
+     * @return bool|int the number of rows deleted, or false if the deletion is unsuccessful for some reason.
      */
     public function delete(array $options = []): bool|int
     {
@@ -914,10 +913,10 @@ class ActiveRecord extends BaseActiveRecord
      * @param array $condition the conditions that will be passed to the `where()` method when building the query.
      * Please refer to [[ActiveQuery::where()]] on how to specify this parameter.
      *
-     * @return int the number of rows deleted
-     *
      * @throws InvalidConfigException
      * @throws Exception on error.
+     *
+     * @return int the number of rows deleted
      *
      * @see [[ActiveRecord::primaryKeysByCondition()]]
      */

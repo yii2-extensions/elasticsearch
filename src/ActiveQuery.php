@@ -119,9 +119,9 @@ class ActiveQuery extends Query implements ActiveQueryInterface
      * @param Connection|null $db the DB connection used to create the DB command.
      * If null, the DB connection returned by [[modelClass]] will be used.
      *
-     * @return Command the created DB command instance.
-     *
      * @throws Exception
+     *
+     * @return Command the created DB command instance.
      */
     public function createCommand(Connection $db = null): Command
     {
@@ -169,9 +169,9 @@ class ActiveQuery extends Query implements ActiveQueryInterface
      * @param Connection|null $db the DB connection used to create the DB command.
      * If null, the DB connection returned by [[modelClass]] will be used.
      *
-     * @return array the query results. If the query results in nothing, an empty array will be returned.
-     *
      * @throws Exception
+     *
+     * @return array the query results. If the query results in nothing, an empty array will be returned.
      */
     public function all($db = null): array
     {
@@ -258,11 +258,11 @@ class ActiveQuery extends Query implements ActiveQueryInterface
      * @param Connection|null $db the DB connection used to create the DB command.
      * If null, the DB connection returned by [[modelClass]] will be used.
      *
+     * @throws Exception
+     *
      * @return ActiveRecord|array|null a single row of a query result. Depending on the setting of [[asArray]],
      * the query result may be either an array or an ActiveRecord object. Null will be returned
      * if the query results in nothing.
-     *
-     * @throws Exception
      */
     public function one($db = null): ActiveRecord|array|null
     {

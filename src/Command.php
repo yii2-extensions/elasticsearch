@@ -61,10 +61,10 @@ class Command extends Component
      *
      * @param array $options URL options
      *
-     * @return mixed
      *@throws InvalidConfigException
-     *
      * @throws Exception
+     *
+     * @return mixed
      */
     public function search(array $options = []): mixed
     {
@@ -94,10 +94,10 @@ class Command extends Component
      *
      * @param array $options URL options
      *
-     * @return mixed
      *@throws InvalidConfigException
-     *
      * @throws Exception
+     *
+     * @return mixed
      */
     public function deleteByQuery(array $options = []): mixed
     {
@@ -131,11 +131,11 @@ class Command extends Component
      * @param array|string $suggester the suggester body
      * @param array $options URL options
      *
+     * @throws InvalidConfigException
+     * @throws Exception
+     *
      * @return mixed
      *
-     * @throws InvalidConfigException
-     *
-     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/search-suggesters.html
      */
     public function suggest(array|string $suggester, array $options = []): mixed
@@ -161,14 +161,14 @@ class Command extends Component
      * @param string $index Index that the document belongs to.
      * @param string|null $type Type that the document belongs to.
      * @param array|string $data json string or array of data to store
-     * @param string|int|null $id the documents' id. If not specified, I'd will be automatically chosen
+     * @param int|string|null $id the documents' id. If not specified, I'd will be automatically chosen
      * @param array $options URL options
+     *
+     * @throws InvalidConfigException
+     * @throws Exception
      *
      * @return mixed
      *
-     * @throws InvalidConfigException
-     *
-     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html
      */
     public function insert(
@@ -203,13 +203,14 @@ class Command extends Component
      *
      * @param string $index Index that the document belongs to.
      * @param string|null $type Type that the document belongs to.
-     * @param string|int|null $id the documents' id.
+     * @param int|string|null $id the documents' id.
      * @param array $options URL options
-     *
-     * @return mixed
      *
      * @throws Exception
      * @throws InvalidConfigException
+     *
+     * @return mixed
+     *
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html
      */
     public function get(string $index, string|null $type, string|int $id = null, array $options = []): mixed
@@ -231,11 +232,11 @@ class Command extends Component
      * @param string[] $ids the documents ids as values in an array.
      * @param array $options URL options
      *
+     * @throws InvalidConfigException
+     * @throws Exception
+     *
      * @return mixed
      *
-     * @throws InvalidConfigException
-     *
-     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-multi-get.html
      */
     public function mget(string $index, ?string $type, array $ids, array $options = []): mixed
@@ -256,11 +257,11 @@ class Command extends Component
      * @param string|null $type Type that the document belongs to.
      * @param string $id the documents' id.
      *
+     * @throws InvalidConfigException
+     * @throws Exception
+     *
      * @return mixed
      *
-     * @throws InvalidConfigException
-     *
-     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html#_source
      */
     public function getSource(string $index, ?string $type, string $id): mixed
@@ -279,11 +280,11 @@ class Command extends Component
      * @param string|null $type Type that the document belongs to.
      * @param string $id the documents' id.
      *
+     * @throws InvalidConfigException
+     * @throws Exception
+     *
      * @return mixed
      *
-     * @throws InvalidConfigException
-     *
-     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html
      */
     public function exists(string $index, string|null $type, string $id): mixed
@@ -303,11 +304,11 @@ class Command extends Component
      * @param string $id the documents' id.
      * @param array $options URL options
      *
+     * @throws InvalidConfigException
+     * @throws Exception
+     *
      * @return mixed
      *
-     * @throws InvalidConfigException
-     *
-     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-delete.html
      */
     public function delete(string $index, string|null $type, string $id, array $options = []): mixed
@@ -328,11 +329,11 @@ class Command extends Component
      * @param mixed $data the documents' data.
      * @param array $options URL options
      *
+     * @throws InvalidConfigException
+     * @throws Exception
+     *
      * @return mixed
      *
-     * @throws InvalidConfigException
-     *
-     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html
      */
     public function update(string $index, string|null $type, string $id, mixed $data, array $options = []): mixed
@@ -359,11 +360,11 @@ class Command extends Component
      * @param string $index Index that the document belongs to.
      * @param array|null $configuration
      *
+     * @throws InvalidConfigException
+     * @throws Exception
+     *
      * @return mixed
      *
-     * @throws InvalidConfigException
-     *
-     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html
      */
     public function createIndex(string $index, array $configuration = null): mixed
@@ -378,11 +379,11 @@ class Command extends Component
      *
      * @param string $index Index that the document belongs to.
      *
+     * @throws InvalidConfigException
+     * @throws Exception
+     *
      * @return mixed
      *
-     * @throws InvalidConfigException
-     *
-     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-delete-index.html
      */
     public function deleteIndex(string $index): mixed
@@ -410,11 +411,11 @@ class Command extends Component
      *
      * @param string $index Index that the document belongs to.
      *
+     * @throws InvalidConfigException
+     * @throws Exception
+     *
      * @return mixed
      *
-     * @throws InvalidConfigException
-     *
-     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-exists.html
      */
     public function indexExists(string $index): mixed
@@ -426,11 +427,11 @@ class Command extends Component
      * @param string $index Index that the document belongs to.
      * @param string|null $type Type that the document belongs to.
      *
+     * @throws InvalidConfigException
+     * @throws Exception
+     *
      * @return mixed
      *
-     * @throws InvalidConfigException
-     *
-     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-types-exists.html
      */
     public function typeExists(string $index, string|null $type): mixed
@@ -445,10 +446,10 @@ class Command extends Component
     /**
      * @param string $alias
      *
-     * @return bool
      *@throws InvalidConfigException
-     *
      * @throws Exception
+     *
+     * @return bool
      */
     public function aliasExists(string $alias): bool
     {
@@ -475,11 +476,11 @@ class Command extends Component
     /**
      * @param string $alias
      *
+     * @throws InvalidConfigException
+     * @throws Exception
+     *
      * @return array
      *
-     * @throws InvalidConfigException
-     *
-     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/2.0/indices-aliases.html#alias-retrieving
      */
     public function getIndexInfoByAlias(string $alias): array
@@ -496,10 +497,10 @@ class Command extends Component
     /**
      * @param string $alias
      *
-     * @return array
      *@throws InvalidConfigException
-     *
      * @throws Exception
+     *
+     * @return array
      */
     public function getIndexesByAlias(string $alias): array
     {
@@ -509,11 +510,11 @@ class Command extends Component
     /**
      * @param string $index Index that the document belongs to.
      *
+     * @throws InvalidConfigException
+     * @throws Exception
+     *
      * @return array
      *
-     * @throws InvalidConfigException
-     *
-     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/2.0/indices-aliases.html#alias-retrieving
      */
     public function getIndexAliases(string $index): array
@@ -532,12 +533,12 @@ class Command extends Component
      * @param string $alias
      * @param array $aliasParameters
      *
-     * @return bool
-     *
      * @throws InvalidConfigException
-     *
      * @throws Exception
      * @throws JsonException
+     *
+     * @return bool
+     *
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/2.0/indices-aliases.html#alias-adding
      */
     public function addAlias(string $index, string $alias, array $aliasParameters = []): bool
@@ -553,11 +554,11 @@ class Command extends Component
      * @param string $index Index that the document belongs to.
      * @param string $alias
      *
+     * @throws InvalidConfigException
+     * @throws Exception
+     *
      * @return bool
      *
-     * @throws InvalidConfigException
-     *
-     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/2.0/indices-aliases.html#deleting
      */
     public function removeAlias(string $index, string $alias): bool
@@ -578,11 +579,11 @@ class Command extends Component
      *
      * @param array $actions
      *
-     * @return bool
-     *
      * @throws InvalidConfigException
      * @throws JsonException
      * @throws Exception
+     *
+     * @return bool
      *
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/2.0/indices-aliases.html#indices-aliases
      */
@@ -600,11 +601,11 @@ class Command extends Component
      * @param array|string|null $setting
      * @param array $options URL options
      *
+     * @throws InvalidConfigException
+     * @throws Exception
+     *
      * @return mixed
      *
-     * @throws InvalidConfigException
-     *
-     * @throws Exception
      * @see https://www.elasticsearch.org/guide/en/elasticsearch/reference/current/indices-update-settings.html
      */
     public function updateSettings(string $index, array|string $setting = null, array $options = []): mixed
@@ -649,11 +650,11 @@ class Command extends Component
      * @param array|string $setting
      * @param array $options URL options
      *
+     * @throws InvalidConfigException
+     * @throws Exception
+     *
      * @return mixed
      *
-     * @throws InvalidConfigException
-     *
-     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-update-settings.html#update-settings-analysis
      */
     public function updateAnalyzers(string $index, array|string $setting, array $options = []): mixed
@@ -672,11 +673,11 @@ class Command extends Component
     /**
      * @param string $index Index that the document belongs to.
      *
+     * @throws InvalidConfigException
+     * @throws Exception
+     *
      * @return mixed
      *
-     * @throws InvalidConfigException
-     *
-     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-open-close.html
      */
     public function openIndex(string $index): mixed
@@ -687,10 +688,10 @@ class Command extends Component
     /**
      * @param string $index Index that the document belongs to.
      *
-     * @return mixed
-     *
      * @throws InvalidConfigException
      * @throws Exception
+     *
+     * @return mixed
      *
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-open-close.html
      */
@@ -702,10 +703,10 @@ class Command extends Component
     /**
      * @param array $options URL options
      *
-     * @return mixed
-     *
      * @throws InvalidConfigException
      * @throws Exception
+     *
+     * @return mixed
      *
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-scroll.html
      */
@@ -728,11 +729,11 @@ class Command extends Component
     /**
      * @param array $options URL options
      *
+     * @throws InvalidConfigException
+     * @throws Exception
+     *
      * @return mixed
      *
-     * @throws InvalidConfigException
-     *
-     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-scroll.html
      */
     public function clearScroll(array $options = []): mixed
@@ -753,11 +754,11 @@ class Command extends Component
     /**
      * @param string $index Index that the document belongs to.
      *
+     * @throws InvalidConfigException
+     * @throws Exception
+     *
      * @return mixed
      *
-     * @throws InvalidConfigException
-     *
-     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-stats.html
      */
     public function getIndexStats(string $index = '_all'): mixed
@@ -768,11 +769,11 @@ class Command extends Component
     /**
      * @param string $index Index that the document belongs to.
      *
+     * @throws InvalidConfigException
+     * @throws Exception
+     *
      * @return mixed
      *
-     * @throws InvalidConfigException
-     *
-     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-recovery.html
      */
     public function getIndexRecoveryStats(string $index = '_all'): mixed
@@ -785,11 +786,11 @@ class Command extends Component
     /**
      * @param string $index Index that the document belongs to.
      *
+     * @throws InvalidConfigException
+     * @throws Exception
+     *
      * @return mixed
      *
-     * @throws InvalidConfigException
-     *
-     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-clearcache.html
      */
     public function clearIndexCache(string $index): mixed
@@ -800,11 +801,11 @@ class Command extends Component
     /**
      * @param string $index Index that the document belongs to.
      *
+     * @throws InvalidConfigException
+     * @throws Exception
+     *
      * @return mixed
      *
-     * @throws InvalidConfigException
-     *
-     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-flush.html
      */
     public function flushIndex(string $index = '_all'): mixed
@@ -815,11 +816,11 @@ class Command extends Component
     /**
      * @param string $index Index that the document belongs to.
      *
+     * @throws InvalidConfigException
+     * @throws Exception
+     *
      * @return mixed
      *
-     * @throws InvalidConfigException
-     *
-     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-refresh.html
      */
     public function refreshIndex(string $index): mixed
@@ -836,11 +837,11 @@ class Command extends Component
      * @param array|string|null $mapping
      * @param array $options URL options
      *
+     * @throws InvalidConfigException
+     * @throws Exception
+     *
      * @return mixed
      *
-     * @throws InvalidConfigException
-     *
-     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-put-mapping.html
      */
     public function setMapping(string $index, string|null $type, array|string|null $mapping, array $options = []): mixed
@@ -864,11 +865,11 @@ class Command extends Component
      * @param string $index Index that the document belongs to.
      * @param string|null $type Type that the document belongs to.
      *
+     * @throws InvalidConfigException
+     * @throws Exception
+     *
      * @return mixed
      *
-     * @throws InvalidConfigException
-     *
-     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-get-mapping.html
      */
     public function getMapping(string $index = '_all', string $type = null): mixed

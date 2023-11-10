@@ -77,7 +77,8 @@ class ActiveDataProviderTest extends TestCase
     {
         $provider = new ActiveDataProvider(
             [
-                'query' => Customer::find()->addAggregate('agg_status',
+                'query' => Customer::find()->addAggregate(
+                    'agg_status',
                     [
                         'terms' => [
                             'field' => 'status',

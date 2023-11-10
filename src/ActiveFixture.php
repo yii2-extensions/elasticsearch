@@ -149,9 +149,9 @@ class ActiveFixture extends BaseActiveFixture
      *
      * If the data file does not exist, an empty array will be returned.
      *
-     * @return array the data rows to be inserted into the database index.
-     *
      * @throws InvalidConfigException
+     *
+     * @return array the data rows to be inserted into the database index.
      */
     protected function getData(): array
     {

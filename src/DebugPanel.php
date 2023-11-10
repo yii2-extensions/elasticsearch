@@ -221,7 +221,8 @@ HTML;
         $target = $this->module->logTarget;
         $messages = $target->filterMessages(
             $target->messages,
-            Logger::LEVEL_PROFILE, ['yii\elasticsearch\Connection::httpRequest'],
+            Logger::LEVEL_PROFILE,
+            ['yii\elasticsearch\Connection::httpRequest'],
         );
 
         return ['messages' => $messages];

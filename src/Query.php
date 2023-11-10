@@ -162,7 +162,7 @@ class Query extends Component implements QueryInterface
      */
     public array|bool|null $source = null;
     /**
-     * @var string|array|null The index to retrieve data from. This can be a string representing a single index or an
+     * @var array|string|null The index to retrieve data from. This can be a string representing a single index or an
      * array of multiple indexes.
      * If this is not set, indexes are being queried.
      *
@@ -276,10 +276,10 @@ class Query extends Component implements QueryInterface
      * If this parameter is not given, the `elasticsearch` application
      * component will be used.
      *
-     * @return Command the created DB command instance.
-     *
      * @throws InvalidConfigException
      * @throws Exception
+     *
+     * @return Command the created DB command instance.
      */
     public function createCommand(Connection $db = null): Command
     {
@@ -298,10 +298,10 @@ class Query extends Component implements QueryInterface
      * @param Connection $db the database connection used to execute the query.
      * If this parameter is not given, the `elasticsearch` application component will be used.
      *
-     * @return array the query results. If the query results in nothing, an empty array will be returned.
-     *
      * @throws Exception
      * @throws InvalidConfigException
+     *
+     * @return array the query results. If the query results in nothing, an empty array will be returned.
      */
     public function all($db = null): array
     {
@@ -363,11 +363,11 @@ class Query extends Component implements QueryInterface
      * @param Connection $db the database connection used to execute the query.
      * If this parameter is not given, the `elasticsearch` application component will be used.
      *
-     * @return ActiveRecord|array|bool|null the first row (in terms of an array) of the query result.
-     * False is returned if the query results in nothing.
-     *
      * @throws InvalidConfigException
      * @throws Exception
+     *
+     * @return ActiveRecord|array|bool|null the first row (in terms of an array) of the query result.
+     * False is returned if the query results in nothing.
      */
     public function one($db = null)
     {
@@ -399,10 +399,10 @@ class Query extends Component implements QueryInterface
      *
      *  - [routing](https://www.elastic.co/guide/en/elasticsearch/reference/current/search.html#search-routing)
      *
-     * @return array the query results.
-     *
      * @throws Exception
      * @throws InvalidConfigException
+     *
+     * @return array the query results.
      */
     public function search(Connection $db = null, array $options = [])
     {
@@ -446,10 +446,10 @@ class Query extends Component implements QueryInterface
      * If this parameter is not given, the `elasticsearch` application component will be used.
      * @param array $options The options given with this query.
      *
-     * @return array the query results.
-     *
      * @throws Exception
      * @throws InvalidConfigException
+     *
+     * @return array the query results.
      */
     public function delete(Connection $db = null, array $options = []): array
     {
@@ -469,11 +469,11 @@ class Query extends Component implements QueryInterface
      * @param Connection|null $db the database connection used to execute the query.
      * If this parameter is not given, the `elasticsearch` application component will be used.
      *
-     * @return string|null the value of the specified attribute in the first record of the query result.
-     * Null is returned if the query result is empty or the field does not exist.
-     *
      * @throws Exception
      * @throws InvalidConfigException
+     *
+     * @return string|null the value of the specified attribute in the first record of the query result.
+     * Null is returned if the query result is empty or the field does not exist.
      */
     public function scalar(string $field, Connection $db = null): string|null
     {
@@ -509,10 +509,10 @@ class Query extends Component implements QueryInterface
      * @param Connection|null $db the database connection used to execute the query.
      * If this parameter is not given, the `elasticsearch` application component will be used.
      *
-     * @return array the first column of the query result. An empty array is returned if the query results in nothing.
-     *
      * @throws Exception
      * @throws InvalidConfigException
+     *
+     * @return array the first column of the query result. An empty array is returned if the query results in nothing.
      */
     public function column(string $field, Connection $db = null): array
     {
@@ -554,10 +554,10 @@ class Query extends Component implements QueryInterface
      * @param Connection $db the database connection used to execute the query.
      * If this parameter is not given, the `elasticsearch` application component will be used.
      *
-     * @return int number of records.
-     *
      * @throws Exception
      * @throws InvalidConfigException
+     *
+     * @return int number of records.
      */
     public function count($q = '*', $db = null): int
     {
@@ -593,10 +593,10 @@ class Query extends Component implements QueryInterface
      * @param Connection $db the database connection used to execute the query.
      * If this parameter is not given, the `elasticsearch` application component will be used.
      *
-     * @return bool whether the query result contains any row of data.
-     *
      * @throws Exception
      * @throws InvalidConfigException
+     *
+     * @return bool whether the query result contains any row of data.
      */
     public function exists($db = null): bool
     {
@@ -726,10 +726,10 @@ class Query extends Component implements QueryInterface
      * @param Connection|null $db the database connection. If not set, the `elasticsearch` application component will be
      * used.
      *
+     * @throws InvalidConfigException
+     *
      * @return BatchQueryResult the batch query result. It implements the [[\Iterator]] interface and can be traversed
      * to retrieve the data in batches.
-     *
-     * @throws InvalidConfigException
      */
     public function batch(string $scrollWindow = '1m', Connection $db = null): BatchQueryResult
     {
@@ -761,10 +761,10 @@ class Query extends Component implements QueryInterface
      * @param Connection|null $db the database connection. If not set, the `elasticsearch` application component will be
      * used.
      *
+     * @throws InvalidConfigException
+     *
      * @return BatchQueryResult the batch query result. It implements the [[\Iterator]] interface and can be traversed
      * to retrieve the data in batches.
-     *
-     * @throws InvalidConfigException
      */
     public function each(string $scrollWindow = '1m', Connection $db = null): BatchQueryResult
     {
@@ -884,7 +884,7 @@ class Query extends Component implements QueryInterface
     /**
      * Sets the source filtering, specifying how the `_source` field of the document should be returned.
      *
-     * @param bool|array|string|null $source the source patterns to be selected.
+     * @param array|bool|string|null $source the source patterns to be selected.
      *
      * @return static the query object itself.
      *

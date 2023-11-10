@@ -41,10 +41,10 @@ class QueryBuilder extends BaseObject
      *
      * @param Query $query the [[Query]] object from which the query will be generated.
      *
+     * @throws NotSupportedException
+     *
      * @return array the generated SQL statement (the first array element) and the corresponding parameters to be bound
      * to the SQL statement (the second array element).
-     *
-     * @throws NotSupportedException
      */
     public function build(Query $query): array
     {
@@ -206,10 +206,10 @@ class QueryBuilder extends BaseObject
      * @param array|string|null $condition the condition specification. Please refer to [[Query::where()]] on how to
      * specify a condition.
      *
-     * @return array|string the generated SQL expression
-     *
      * @throws NotSupportedException if string conditions are used in where
      * @throws InvalidArgumentException if unknown operator is used in a query
+     *
+     * @return array|string the generated SQL expression
      */
     public function buildCondition(array|string $condition = null): array|string
     {
@@ -270,9 +270,9 @@ class QueryBuilder extends BaseObject
                 } else {
                     $parts[] = ['ids' => ['values' => is_array($value) ? $value : [$value]]];
                 }
-            } else if (is_array($value)) { // IN condition
+            } elseif (is_array($value)) { // IN condition
                 $parts[] = ['terms' => [$attribute => $value]];
-            } else if ($value === null) {
+            } elseif ($value === null) {
                 $emptyFields[] = [ 'exists' => [ 'field' => $attribute ] ];
             } else {
                 $parts[] = ['term' => [$attribute => $value]];
@@ -424,7 +424,7 @@ class QueryBuilder extends BaseObject
                     ];
                 }
             }
-        } else if (empty($values) && $canBeNull) {
+        } elseif (empty($values) && $canBeNull) {
             $filter = [
                 'bool' => [
                     'must_not' => [

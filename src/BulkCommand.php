@@ -55,9 +55,10 @@ class BulkCommand extends Component
     /**
      * Executes the bulk command.
      *
-     * @return mixed
      * @throws Exception
      * @throws InvalidConfigException
+     *
+     * @return mixed
      */
     public function execute(): mixed
     {

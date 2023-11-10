@@ -165,10 +165,10 @@ class BatchQueryResult extends BaseObject implements Iterator
     /**
      * Fetches the next batch of data.
      *
-     * @return array the data fetched
-     *
      * @throws Exception
      * @throws InvalidConfigException
+     *
+     * @return array the data fetched
      */
     protected function fetchData(): array
     {

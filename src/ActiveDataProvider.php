@@ -77,9 +77,9 @@ class ActiveDataProvider extends \yii\data\ActiveDataProvider
      *
      * @param string $name aggregation name.
      *
-     * @return array aggregation results.
-     *
      * @throws InvalidCallException if query results do not contain the requested aggregation.
+     *
+     * @return array aggregation results.
      */
     public function getAggregation(string $name): array
     {
@@ -107,9 +107,9 @@ class ActiveDataProvider extends \yii\data\ActiveDataProvider
      *
      * @param string $name suggestion name.
      *
-     * @return array suggestion results.
-     *
      * @throws InvalidCallException if query results do not contain the requested suggestion.
+     *
+     * @return array suggestion results.
      */
     public function getSuggestion(string $name): array
     {

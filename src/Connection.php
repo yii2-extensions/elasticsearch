@@ -102,7 +102,7 @@ class Connection extends Component
         ['http_address' => 'inet[/127.0.0.1:9200]'],
     ];
     /**
-     * @var string|int|null the active node. Key of one of the [[nodes]]. Will be randomly selected on [[open()]].
+     * @var int|string|null the active node. Key of one of the [[nodes]]. Will be randomly selected on [[open()]].
      */
     public string|int|null $activeNode = null;
     /**
@@ -226,7 +226,7 @@ class Connection extends Component
         $this->selectActiveNode();
 
         Yii::debug(
-            'Opening connection to Elasticsearch. Nodes in cluster: ' . count($this->nodes)  . ', active node: ' .
+            'Opening connection to Elasticsearch. Nodes in cluster: ' . count($this->nodes) . ', active node: ' .
             $this->nodes[$this->activeNode]['http_address'],
             __CLASS__
         );
@@ -306,7 +306,7 @@ class Connection extends Component
         }
 
         Yii::debug(
-            'Closing connection to Elasticsearch. Active node was: '  .
+            'Closing connection to Elasticsearch. Active node was: ' .
             $this->nodes[$this->activeNode]['http']['publish_address'],
             __CLASS__,
         );
@@ -344,10 +344,10 @@ class Connection extends Component
      *
      * @param array $config the configuration for the Command class.
      *
-     * @return Command the DB command.
-     *
      * @throws InvalidConfigException
      * @throws Exception
+     *
+     * @return Command the DB command.
      */
     public function createCommand(array $config = []): Command
     {
@@ -362,10 +362,10 @@ class Connection extends Component
      *
      * @param array $config the configuration for the [[BulkCommand]] class.
      *
-     * @return BulkCommand the DB command.
-     *
      * @throws InvalidConfigException
      * @throws Exception
+     *
+     * @return BulkCommand the DB command.
      */
     public function createBulkCommand(array $config = []): BulkCommand
     {
@@ -393,10 +393,10 @@ class Connection extends Component
      * @param string|null $body request body.
      * @param bool $raw if response body contains JSON and should be decoded.
      *
-     * @return mixed response.
-     *
      * @throws InvalidConfigException
      * @throws Exception
+     *
+     * @return mixed response.
      */
     public function get(array|string $url, array $options = [], string $body = null, bool $raw = false): mixed
     {
@@ -412,9 +412,10 @@ class Connection extends Component
      * @param array $options URL options.
      * @param string|null $body request body.
      *
-     * @return mixed response.
      * @throws InvalidConfigException
      * @throws Exception
+     *
+     * @return mixed response.
      */
     public function head(array|string $url, array $options = [], string $body = null): mixed
     {
@@ -431,10 +432,10 @@ class Connection extends Component
      * @param string|null $body request body.
      * @param bool $raw if response body contains JSON and should be decoded.
      *
-     * @return mixed response
-     *
      * @throws InvalidConfigException
      * @throws Exception
+     *
+     * @return mixed response
      */
     public function post(array|string $url, array $options = [], string $body = null, bool $raw = false): mixed
     {
@@ -451,10 +452,10 @@ class Connection extends Component
      * @param string|null $body request body.
      * @param bool $raw if response body contains JSON and should be decoded.
      *
-     * @return mixed response
-     *
      * @throws InvalidConfigException
      * @throws Exception
+     *
+     * @return mixed response
      */
     public function put(array|string $url, array $options = [], string $body = null, bool $raw = false): mixed
     {
@@ -471,10 +472,10 @@ class Connection extends Component
      * @param string|null $body request body.
      * @param bool $raw if response body contains JSON and should be decoded.
      *
-     * @return mixed response.
-     *
      * @throws InvalidConfigException
      * @throws Exception
+     *
+     * @return mixed response.
      */
     public function delete(array|string $url, array $options = [], string $body = null, bool $raw = false): mixed
     {
@@ -528,10 +529,10 @@ class Connection extends Component
      * @param string|null $requestBody request body.
      * @param bool $raw if response body contains JSON and should be decoded.
      *
-     * @return mixed if request failed.
-     *
      * @throws InvalidConfigException
      * @throws Exception if request failed.
+     *
+     * @return mixed if request failed.
      */
     protected function httpRequest(
         string $method,
@@ -642,7 +643,8 @@ class Connection extends Component
         curl_setopt_array($this->_curl, $options);
 
         if (curl_exec($this->_curl) === false) {
-            throw new Exception('Elasticsearch request failed: ' . curl_errno($this->_curl) . ' - ' .
+            throw new Exception(
+                'Elasticsearch request failed: ' . curl_errno($this->_curl) . ' - ' .
                 curl_error($this->_curl),
                 [
                     'requestMethod' => $method,

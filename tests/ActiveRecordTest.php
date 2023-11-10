@@ -75,7 +75,7 @@ class ActiveRecordTest extends TestCase
                     'name' => 'user2',
                     'address' => 'address2',
                     'status' => 1,
-                    'is_active' => true
+                    'is_active' => true,
                 ],
                 [
                     '_id' => 3,
@@ -590,7 +590,7 @@ class ActiveRecordTest extends TestCase
                     $ar::class,
                     $ar->getIsNewRecord(),
                     $ar->getPrimaryKey(),
-                    $ar->isRelationPopulated('orders')
+                    $ar->isRelationPopulated('orders'),
                 ];
             },
         );
