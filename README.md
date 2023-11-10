@@ -34,28 +34,25 @@ This extension provides the [Elasticsearch](https://www.elastic.co/products/elas
 It includes basic querying/search support and also implements the `ActiveRecord` pattern that allows you to store active
 records in Elasticsearch.
 
-Requirements
-------------
+## Installation
 
-- PHP 8.1 or higher.
+The preferred way to install this extension is through [composer](https://getcomposer.org/download/).
 
-Depending on the version of Elasticsearch you are using you need a different version of this extension.
-
-- For Elasticsearch 1.6.0 to 1.7.6 use extension version 2.0.x
-- For Elasticsearch 5.x or above use extension version 2.1.x
-
-Installation
-------------
-
-The preferred way to install this extension is through [composer](https://getcomposer.org/download/):
-
+Either run
 
 ```
-composer require --prefer-dist yiisoft/yii2-elasticsearch:"~2.1.0"
+php composer.phar require --dev --prefer-dist yii2-extensions/elasticsearch
 ```
 
-Configuration
--------------
+or add
+
+```
+"yii2-extensions/elasticsearch": "dev-main"
+```
+
+to the require section of your `composer.json` file.
+
+## Configuration
 
 To use this extension, you have to configure the Connection class in your application configuration:
 
