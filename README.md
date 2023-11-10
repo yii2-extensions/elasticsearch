@@ -52,16 +52,18 @@ or add
 
 to the require section of your `composer.json` file.
 
-## Configuration
+## Usage
 
 To use this extension, you have to configure the Connection class in your application configuration:
 
 ```php
+use yii\elasticsearch\Connection;
+
 return [
     //....
     'components' => [
         'elasticsearch' => [
-            'class' => 'yii\elasticsearch\Connection',
+            'class' => Connection::class,
             'nodes' => [
                 ['http_address' => '127.0.0.1:9200'],
                 // configure more hosts if you have a cluster
@@ -70,6 +72,19 @@ return [
         ],
     ]
 ];
+```
+
+### Configure with yiisoft/config
+
+> Add the following code to your `config/config-plugin` file in your application.
+
+```php
+'config-plugin' => [
+    'web' => [
+        '$yii2-elasticsearch', // add this line
+        'web/*.php'
+    ],
+],
 ```
 
 ## Testing
