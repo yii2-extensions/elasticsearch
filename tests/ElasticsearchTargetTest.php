@@ -59,8 +59,8 @@ class ElasticsearchTargetTest extends TestCase
                     'db' => $this->getConnection(),
                     'index' => $this->index,
                     'type' => $this->type,
-                ]
-            ]
+                ],
+            ],
         ]);
     }
 
@@ -71,6 +71,4 @@ class ElasticsearchTargetTest extends TestCase
 
         parent::tearDown();
     }
-
-
 }

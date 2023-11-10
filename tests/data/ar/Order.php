@@ -10,15 +10,14 @@ use yii\elasticsearch\Command;
 /**
  * Class Order
  *
- * @property integer $id
- * @property integer $customer_id
- * @property integer $created_at
+ * @property int $id
+ * @property int $customer_id
+ * @property int $created_at
  * @property string $total
  * @property array $itemsArray
- *
- * @property-read Item[] $expensiveItemsUsingViaWithCallable
- * @property-read Item[] $cheapItemsUsingViaWithCallable
- * @property-read Item[] $itemsByArrayValue
+ * @property Item[] $expensiveItemsUsingViaWithCallable
+ * @property Item[] $cheapItemsUsingViaWithCallable
+ * @property Item[] $itemsByArrayValue
  */
 class Order extends ActiveRecord
 {
@@ -98,6 +97,7 @@ class Order extends ActiveRecord
 
     /**
      * sets up the index for this record
+     *
      * @param Command $command
      */
     public static function setUpMapping($command): void
@@ -106,7 +106,7 @@ class Order extends ActiveRecord
             'properties' => [
                 'customer_id' => ['type' => 'integer'],
                 'total' => ['type' => 'integer'],
-            ]
+            ],
         ]);
     }
 }

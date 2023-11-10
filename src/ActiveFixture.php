@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 /**
  * @link https://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
 
 namespace yii\elasticsearch;
 
-use Yii;
 use yii\base\InvalidConfigException;
 use yii\test\BaseActiveFixture;
 
@@ -40,24 +40,25 @@ class ActiveFixture extends BaseActiveFixture
     /**
      * @var string the name of the index that this fixture is about. If this property is not set,
      * the name will be determined via [[modelClass]].
+     *
      * @see modelClass
      */
     public $index;
     /**
      * @var string the name of the type that this fixture is about. If this property is not set,
      * the name will be determined via [[modelClass]].
+     *
      * @see modelClass
      */
     public $type;
     /**
-     * @var string|boolean the file path or path alias of the data file that contains the fixture data
+     * @var bool|string the file path or path alias of the data file that contains the fixture data
      * to be returned by [[getData()]]. If this is not set, it will default to `FixturePath/data/Index/Type.php`,
      * where `FixturePath` stands for the directory containing this fixture class, `Index` stands for the elasticsearch [[index]] name
      * and `Type` stands for the [[type]] associated with this fixture.
      * You can set this property to be false to prevent loading any data.
      */
     public $dataFile;
-
 
     /**
      * @inheritdoc
@@ -96,7 +97,7 @@ class ActiveFixture extends BaseActiveFixture
 
         foreach ($this->getData() as $alias => $row) {
             $options = [];
-            $id = isset($row[$idField]) ? $row[$idField] : null;
+            $id = $row[$idField] ?? null;
             unset($row[$idField]);
             if (isset($row['_parent'])) {
                 $options['parent'] = $row['_parent'];
@@ -133,9 +134,8 @@ class ActiveFixture extends BaseActiveFixture
             $class = new \ReflectionClass($this);
             $dataFile = dirname($class->getFileName()) . "/data/{$this->index}/{$this->type}.php";
             return is_file($dataFile) ? require($dataFile) : [];
-        } else {
-            return parent::getData();
         }
+        return parent::getData();
     }
 
     /**

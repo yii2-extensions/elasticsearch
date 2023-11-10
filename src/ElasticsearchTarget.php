@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 /**
  * @link https://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
 
 namespace yii\elasticsearch;
 
-use Yii;
 use yii\base\InvalidConfigException;
 use yii\di\Instance;
 use yii\helpers\ArrayHelper;
@@ -35,7 +35,7 @@ class ElasticsearchTarget extends Target
      */
     public $type = 'log';
     /**
-     * @var Connection|array|string the Elasticsearch connection object or the application component ID
+     * @var array|Connection|string the Elasticsearch connection object or the application component ID
      * of the Elasticsearch connection.
      */
     public $db = 'elasticsearch';
@@ -44,16 +44,16 @@ class ElasticsearchTarget extends Target
      */
     public $options = [];
     /**
-     * @var boolean If true, context will be logged as a separate message after all other messages.
+     * @var bool If true, context will be logged as a separate message after all other messages.
      */
     public $logContext = true;
     /**
-     * @var boolean If true, context will be included in every message.
+     * @var bool If true, context will be included in every message.
      * This is convenient if you log application errors and analyze them with tools like Kibana.
      */
     public $includeContext = false;
     /**
-     * @var boolean If true, context message will cached once it's been created. Makes sense to use with [[includeContext]].
+     * @var bool If true, context message will cached once it's been created. Makes sense to use with [[includeContext]].
      */
     public $cacheContext = false;
 
@@ -62,9 +62,9 @@ class ElasticsearchTarget extends Target
      */
     protected $_contextMessage = null;
 
-
     /**
      * This method will initialize the [[elasticsearch]] property to make sure it refers to a valid Elasticsearch connection.
+     *
      * @throws InvalidConfigException if [[elasticsearch]] is invalid.
      */
     public function init()
@@ -91,6 +91,7 @@ class ElasticsearchTarget extends Target
      * If [[includeContext]] property is false, returns context message normally.
      * If [[includeContext]] is true, returns an empty string (so that context message in [[collect]] is not generated),
      * expecting that context will be appended to every message in [[prepareMessage]].
+     *
      * @return array the context information
      */
     protected function getContextMessage()
@@ -107,6 +108,7 @@ class ElasticsearchTarget extends Target
      * This method will filter the given messages with [[levels]] and [[categories]].
      * And if requested, it will also export the filtering result to specific medium (e.g. email).
      * Depending on the [[includeContext]] attribute, a context message will be either created or ignored.
+     *
      * @param array $messages log messages to be processed. See [[Logger::messages]] for the structure
      * of each message.
      * @param bool $final whether this method is called at the end of the current application
@@ -135,12 +137,14 @@ class ElasticsearchTarget extends Target
 
     /**
      * Prepares a log message.
+     *
      * @param array $message The log message to be formatted.
+     *
      * @return string
      */
     public function prepareMessage($message)
     {
-        list($text, $level, $category, $timestamp) = $message;
+        [$text, $level, $category, $timestamp] = $message;
 
         $result = [
             'category' => $category,
@@ -166,13 +170,11 @@ class ElasticsearchTarget extends Target
             $result['context'] = $this->getContextMessage();
         }
 
-        $message = implode("\n", [
+        return implode("\n", [
             Json::encode([
-                'index' => new \stdClass()
+                'index' => new \stdClass(),
             ]),
-            Json::encode($result)
+            Json::encode($result),
         ]);
-
-        return $message;
     }
 }

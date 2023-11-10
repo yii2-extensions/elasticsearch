@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 /**
  * @link https://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
@@ -68,11 +69,11 @@ class ActiveRecord extends BaseActiveRecord
     private $_highlight;
     private $_explanation;
 
-
     /**
      * Returns the database connection used by this AR class.
      * By default, the "elasticsearch" application component is used as the database connection.
      * You may override this method if you want to use a different database connection.
+     *
      * @return Connection the database connection used by this AR class.
      */
     public static function getDb()
@@ -82,11 +83,12 @@ class ActiveRecord extends BaseActiveRecord
 
     /**
      * @inheritdoc
+     *
      * @return ActiveQuery the newly created [[ActiveQuery]] instance.
      */
     public static function find()
     {
-        return Yii::createObject(ActiveQuery::className(), [get_called_class()]);
+        return Yii::createObject(ActiveQuery::className(), [static::class]);
     }
 
     /**
@@ -121,6 +123,7 @@ class ActiveRecord extends BaseActiveRecord
 
     /**
      * Filter out condition parts that are array valued, to prevent building arbitrary conditions.
+     *
      * @param array $condition
      */
     private static function filterCondition($condition)
@@ -146,6 +149,7 @@ class ActiveRecord extends BaseActiveRecord
      * as request URI parameters.
      * Please refer to the [Elasticsearch documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html)
      * for more details on these options.
+     *
      * @return static|null The record instance or null if it was not found.
      */
     public static function get($primaryKey, $options = [])
@@ -175,6 +179,7 @@ class ActiveRecord extends BaseActiveRecord
      *
      * Please refer to the [Elasticsearch documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html)
      * for more details on these options.
+     *
      * @return array The record instances, or empty array if nothing was found
      */
     public static function mget(array $primaryKeys, $options = [])
@@ -234,8 +239,11 @@ class ActiveRecord extends BaseActiveRecord
 
     /**
      * Alias to [[get_id()]]. Returns the primary key value.
+     *
      * @param bool $asArray
+     *
      * @return mixed
+     *
      * @deprecated since 2.1.0
      */
     public function getPrimaryKey($asArray = false)
@@ -243,15 +251,17 @@ class ActiveRecord extends BaseActiveRecord
         $pk = static::primaryKey()[0];
         if ($asArray) {
             return [$pk => $this->$pk];
-        } else {
-            return $this->$pk;
         }
+        return $this->$pk;
     }
 
     /**
      * Alias to [[set_id()]]. Sets the primary key value.
+     *
      * @param mixed $value
+     *
      * @throws \yii\base\InvalidCallException when record is not new
+     *
      * @deprecated since 2.1.0
      */
     public function setPrimaryKey($value)
@@ -262,7 +272,9 @@ class ActiveRecord extends BaseActiveRecord
 
     /**
      * Sets the `_id` attribute that holds the primary key (for compatibility with relations)
+     *
      * @param mixed $value
+     *
      * @throws \yii\base\InvalidCallException when record is not new
      */
     public function set_id($value)
@@ -277,6 +289,7 @@ class ActiveRecord extends BaseActiveRecord
 
     /**
      * Returns the `_id` attribute that holds the primary key (for compatibility with relations)
+     *
      * @return mixed
      */
     public function get_id()
@@ -298,9 +311,8 @@ class ActiveRecord extends BaseActiveRecord
         }
         if ($asArray) {
             return [$pk => $id];
-        } else {
-            return $id;
         }
+        return $id;
     }
 
     /**
@@ -326,8 +338,9 @@ class ActiveRecord extends BaseActiveRecord
      *
      * Attributes are names of fields of the corresponding Elasticsearch document.
      *
-     * @return string[] list of attribute names.
      * @throws \yii\base\InvalidConfigException if not overridden in a child class.
+     *
+     * @return string[] list of attribute names.
      */
     public function attributes()
     {
@@ -352,17 +365,18 @@ class ActiveRecord extends BaseActiveRecord
      */
     public static function index()
     {
-        return Inflector::pluralize(Inflector::camel2id(StringHelper::basename(get_called_class()), '-'));
+        return Inflector::pluralize(Inflector::camel2id(StringHelper::basename(static::class), '-'));
     }
 
     /**
      * Returns the name of the type of this record.
      * IMPORTANT: For Elasticsearch 7 and later, [[type()]] is ignored.
+     *
      * @return string the name of the type of this record.
      */
     public static function type()
     {
-        return Inflector::camel2id(StringHelper::basename(get_called_class()), '-');
+        return Inflector::camel2id(StringHelper::basename(static::class), '-');
     }
 
     /**
@@ -393,10 +407,10 @@ class ActiveRecord extends BaseActiveRecord
 
         $pk = static::primaryKey()[0];
         $record->_id = $row[$pk];
-        $record->_highlight = isset($row['highlight']) ? $row['highlight'] : null;
-        $record->_score = isset($row['_score']) ? $row['_score'] : null;
-        $record->_version = isset($row['_version']) ? $row['_version'] : null; // TODO version should always be available...
-        $record->_explanation = isset($row['_explanation']) ? $row['_explanation'] : null;
+        $record->_highlight = $row['highlight'] ?? null;
+        $record->_score = $row['_score'] ?? null;
+        $record->_version = $row['_version'] ?? null; // TODO version should always be available...
+        $record->_explanation = $row['_explanation'] ?? null;
     }
 
     /**
@@ -409,11 +423,13 @@ class ActiveRecord extends BaseActiveRecord
      * depends on the row data to be populated into the record.
      * For example, by creating a record based on the value of a column,
      * you may implement the so-called single-table inheritance mapping.
+     *
      * @param array $row row data to be populated into the record.
      * This array consists of the following keys:
      *  - `_source`: refers to the attributes of the record.
      *  - `_type`: the type this record is stored in.
      *  - `_index`: the index this record is stored in.
+     *
      * @return static the newly created active record
      */
     public static function instantiate($row)
@@ -466,6 +482,7 @@ class ActiveRecord extends BaseActiveRecord
      * for more details on these options.
      *
      * By default the `op_type` is set to `create` if model primary key is present.
+     *
      * @return bool whether the attributes are valid and the record is inserted successfully.
      */
     public function insert($runValidation = true, $attributes = null, $options = [ ])
@@ -479,7 +496,7 @@ class ActiveRecord extends BaseActiveRecord
         $values = $this->getDirtyAttributes($attributes);
 
         if ($this->getPrimaryKey() !== null) {
-            $options['op_type'] = isset($options['op_type']) ? $options['op_type'] : 'create';
+            $options['op_type'] = $options['op_type'] ?? 'create';
         }
 
         $response = static::getDb()->createCommand()->insert(
@@ -539,11 +556,12 @@ class ActiveRecord extends BaseActiveRecord
      *   Make sure the record has been fetched with a [[version]] before. This is only the case
      *   for records fetched via [[get()]] and [[mget()]] by default. For normal queries, the `_version` field has to be fetched explicitly.
      *
-     * @return int|bool the number of rows affected, or false if validation fails
-     * or [[beforeSave()]] stops the updating process.
      * @throws StaleObjectException if optimistic locking is enabled and the data being updated is outdated.
      * @throws InvalidParamException if no [[version]] is available and optimistic locking is enabled.
      * @throws Exception in case update failed.
+     *
+     * @return bool|int the number of rows affected, or false if validation fails
+     * or [[beforeSave()]] stops the updating process.
      */
     public function update($runValidation = true, $attributeNames = null, $options = [])
     {
@@ -557,10 +575,13 @@ class ActiveRecord extends BaseActiveRecord
      * @param array $attributes attributes to update
      * @param array $options options given in this parameter are passed to Elasticsearch
      * as request URI parameters. See [[update()]] for details.
-     * @return int|false the number of rows affected, or false if [[beforeSave()]] stops the updating process.
+     *
      * @throws StaleObjectException if optimistic locking is enabled and the data being updated is outdated.
      * @throws InvalidParamException if no [[version]] is available and optimistic locking is enabled.
      * @throws Exception in case update failed.
+     *
+     * @return false|int the number of rows affected, or false if [[beforeSave()]] stops the updating process.
+     *
      * @see update()
      */
     protected function updateInternal($attributes = null, $options = [])
@@ -612,17 +633,19 @@ class ActiveRecord extends BaseActiveRecord
 
         if ($result === false) {
             return 0;
-        } else {
-            return 1;
         }
+        return 1;
     }
 
     /**
      * Performs a quick and highly efficient scroll/scan query to get the list of primary keys that
      * satisfy the given condition. If condition is a list of primary keys
      * (e.g.: `['_id' => ['1', '2', '3']]`), the query is not performed for performance considerations.
+     *
      * @param array $condition please refer to [[ActiveQuery::where()]] on how to specify this parameter
+     *
      * @return array primary keys that correspond to given conditions
+     *
      * @see updateAll()
      * @see updateAllCounters()
      * @see deleteAll()
@@ -654,8 +677,11 @@ class ActiveRecord extends BaseActiveRecord
      * @param array $attributes attribute values (name-value pairs) to be saved into the table
      * @param array $condition the conditions that will be passed to the `where()` method when building the query.
      * Please refer to [[ActiveQuery::where()]] on how to specify this parameter.
-     * @return int the number of rows updated
+     *
      * @throws Exception on error.
+     *
+     * @return int the number of rows updated
+     *
      * @see [[ActiveRecord::primaryKeysByCondition()]]
      */
     public static function updateAll($attributes, $condition = [])
@@ -666,11 +692,11 @@ class ActiveRecord extends BaseActiveRecord
         }
 
         $bulkCommand = static::getDb()->createBulkCommand([
-            "index" => static::index(),
-            "type" => static::type(),
+            'index' => static::index(),
+            'type' => static::type(),
         ]);
         foreach ($primaryKeys as $pk) {
-            $bulkCommand->addAction(["update" => ["_id" => $pk]], ["doc" => $attributes]);
+            $bulkCommand->addAction(['update' => ['_id' => $pk]], ['doc' => $attributes]);
         }
         $response = $bulkCommand->execute();
 
@@ -702,8 +728,11 @@ class ActiveRecord extends BaseActiveRecord
      * Use negative values if you want to decrement the counters.
      * @param array $condition the conditions that will be passed to the `where()` method when building the query.
      * Please refer to [[ActiveQuery::where()]] on how to specify this parameter.
-     * @return int the number of rows updated
+     *
      * @throws Exception on error.
+     *
+     * @return int the number of rows updated
+     *
      * @see [[ActiveRecord::primaryKeysByCondition()]]
      */
     public static function updateAllCounters($counters, $condition = [])
@@ -714,15 +743,15 @@ class ActiveRecord extends BaseActiveRecord
         }
 
         $bulkCommand = static::getDb()->createBulkCommand([
-            "index" => static::index(),
-            "type" => static::type(),
+            'index' => static::index(),
+            'type' => static::type(),
         ]);
         foreach ($primaryKeys as $pk) {
             $script = '';
             foreach ($counters as $counter => $value) {
                 $script .= "ctx._source.{$counter} += params.{$counter};\n";
             }
-            $bulkCommand->addAction(["update" => ["_id" => $pk]], [
+            $bulkCommand->addAction(['update' => ['_id' => $pk]], [
                 'script' => [
                     'inline' => $script,
                     'params' => $counters,
@@ -773,10 +802,11 @@ class ActiveRecord extends BaseActiveRecord
      *   Make sure the record has been fetched with a [[version]] before. This is only the case
      *   for records fetched via [[get()]] and [[mget()]] by default. For normal queries, the `_version` field has to be fetched explicitly.
      *
-     * @return int|bool the number of rows deleted, or false if the deletion is unsuccessful for some reason.
-     * Note that it is possible the number of rows deleted is 0, even though the deletion execution is successful.
      * @throws StaleObjectException if optimistic locking is enabled and the data being deleted is outdated.
      * @throws Exception in case delete failed.
+     *
+     * @return bool|int the number of rows deleted, or false if the deletion is unsuccessful for some reason.
+     * Note that it is possible the number of rows deleted is 0, even though the deletion execution is successful.
      */
     public function delete($options = [])
     {
@@ -813,9 +843,8 @@ class ActiveRecord extends BaseActiveRecord
 
         if ($result === false) {
             return 0;
-        } else {
-            return 1;
         }
+        return 1;
     }
 
     /**
@@ -830,8 +859,11 @@ class ActiveRecord extends BaseActiveRecord
      *
      * @param array $condition the conditions that will be passed to the `where()` method when building the query.
      * Please refer to [[ActiveQuery::where()]] on how to specify this parameter.
-     * @return int the number of rows deleted
+     *
      * @throws Exception on error.
+     *
+     * @return int the number of rows deleted
+     *
      * @see [[ActiveRecord::primaryKeysByCondition()]]
      */
     public static function deleteAll($condition = [])
@@ -842,8 +874,8 @@ class ActiveRecord extends BaseActiveRecord
         }
 
         $bulkCommand = static::getDb()->createBulkCommand([
-            "index" => static::index(),
-            "type" => static::type(),
+            'index' => static::index(),
+            'type' => static::type(),
         ]);
         foreach ($primaryKeys as $pk) {
             $bulkCommand->addDeleteAction($pk);
@@ -855,10 +887,10 @@ class ActiveRecord extends BaseActiveRecord
         foreach ($response['items'] as $item) {
             if (isset($item['delete']['status']) && $item['delete']['status'] == 200) {
                 if (isset($item['delete']['found']) && $item['delete']['found']) {
-                    # ES5 uses "found"
+                    // ES5 uses "found"
                     $n++;
-                } elseif (isset($item['delete']['result']) && $item['delete']['result'] == "deleted") {
-                    # ES6 uses "result"
+                } elseif (isset($item['delete']['result']) && $item['delete']['result'] == 'deleted') {
+                    // ES6 uses "result"
                     $n++;
                 }
             } else {
@@ -908,7 +940,7 @@ class ActiveRecord extends BaseActiveRecord
      * Validates model so that it does not contain array as its keys while linking.
      *
      * @param ActiveRecordInterface $model the model to be linked with the current one.
-     * @param ActiveQueryInterface|ActiveQuery the relational query object.
+     * @param ActiveQuery|ActiveQueryInterface the relational query object.
      */
     protected function validateViaRelationLink($model, $relation)
     {
@@ -921,7 +953,6 @@ class ActiveRecord extends BaseActiveRecord
         $link = null;
 
         if ($p1 && $p2 && $atLeastOneExists) {
-
             if ($this->getIsNewRecord()) {
                 $foreign = $this;
                 $link = array_flip($relation->link);

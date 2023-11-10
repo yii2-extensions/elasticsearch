@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 /**
  * @link https://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
@@ -53,7 +54,7 @@ class BatchQueryResult extends BaseObject implements \Iterator
      */
     public $query;
     /**
-     * @var boolean whether to return a single row during each iteration.
+     * @var bool whether to return a single row during each iteration.
      * If false, a whole batch of rows will be returned in each iteration.
      */
     public $each = false;
@@ -70,7 +71,7 @@ class BatchQueryResult extends BaseObject implements \Iterator
      */
     private $_value;
     /**
-     * @var string|integer the key for the current iteration
+     * @var int|string the key for the current iteration
      */
     private $_key;
     /**
@@ -83,7 +84,6 @@ class BatchQueryResult extends BaseObject implements \Iterator
      * @var string internal Elasticsearch scroll id
      */
     private $_lastScrollId = null;
-
 
     /**
      * Destructor.
@@ -100,7 +100,7 @@ class BatchQueryResult extends BaseObject implements \Iterator
      */
     public function reset()
     {
-        if(isset($this->_lastScrollId)) {
+        if (isset($this->_lastScrollId)) {
             $this->query->createCommand($this->db)->clearScroll(['scroll_id' => $this->_lastScrollId]);
         }
 
@@ -150,6 +150,7 @@ class BatchQueryResult extends BaseObject implements \Iterator
 
     /**
      * Fetches the next batch of data.
+     *
      * @return array the data fetched
      */
     protected function fetchData()
@@ -157,7 +158,7 @@ class BatchQueryResult extends BaseObject implements \Iterator
         if (null === $this->_lastScrollId) {
             //first query - do search
             $options = ['scroll' => $this->scrollWindow];
-            if(!$this->query->orderBy) {
+            if (!$this->query->orderBy) {
                 $query = clone $this->query;
                 $query->orderBy('_doc');
                 $cmd = $this->query->createCommand($this->db);
@@ -186,6 +187,7 @@ class BatchQueryResult extends BaseObject implements \Iterator
     /**
      * Returns the index of the current dataset.
      * This method is required by the interface [[\Iterator]].
+     *
      * @return int the index of the current row.
      */
     #[ReturnTypeWillChange]
@@ -197,6 +199,7 @@ class BatchQueryResult extends BaseObject implements \Iterator
     /**
      * Returns the current dataset.
      * This method is required by the interface [[\Iterator]].
+     *
      * @return mixed the current dataset.
      */
     #[ReturnTypeWillChange]
@@ -208,6 +211,7 @@ class BatchQueryResult extends BaseObject implements \Iterator
     /**
      * Returns whether there is a valid dataset at the current position.
      * This method is required by the interface [[\Iterator]].
+     *
      * @return bool whether there is a valid dataset at the current position.
      */
     #[ReturnTypeWillChange]

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 /**
  * @link https://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
@@ -22,9 +23,9 @@ use yii\db\ActiveQueryInterface;
  * count will be fetched after pagination limit applying, which eliminates ability to verify if requested page number
  * actually exist. Data provider disables [[yii\data\Pagination::$validatePage]] automatically because of this.
  *
- * @property-read array $aggregations All aggregations results.
+ * @property array $aggregations All aggregations results.
  * @property array $queryResults Full query results.
- * @property-read array $suggestions All suggestions results.
+ * @property array $suggestions All suggestions results.
  *
  * @author Paul Klimov <klimov.paul@gmail.com>
  */
@@ -34,7 +35,6 @@ class ActiveDataProvider extends \yii\data\ActiveDataProvider
      * @var array the full query results.
      */
     private $_queryResults;
-
 
     /**
      * @param array $results full query results
@@ -61,14 +61,17 @@ class ActiveDataProvider extends \yii\data\ActiveDataProvider
     public function getAggregations()
     {
         $results = $this->getQueryResults();
-        return isset($results['aggregations']) ? $results['aggregations'] : [];
+        return $results['aggregations'] ?? [];
     }
 
     /**
      * Returns results of the specified aggregation.
+     *
      * @param string $name aggregation name.
-     * @return array aggregation results.
+     *
      * @throws InvalidCallException if query results do not contain the requested aggregation.
+     *
+     * @return array aggregation results.
      */
     public function getAggregation($name)
     {
@@ -85,14 +88,17 @@ class ActiveDataProvider extends \yii\data\ActiveDataProvider
     public function getSuggestions()
     {
         $results = $this->getQueryResults();
-        return isset($results['suggest']) ? $results['suggest'] : [];
+        return $results['suggest'] ?? [];
     }
 
     /**
      * Returns results of the specified suggestion.
+     *
      * @param string $name suggestion name.
-     * @return array suggestion results.
+     *
      * @throws InvalidCallException if query results do not contain the requested suggestion.
+     *
+     * @return array suggestion results.
      */
     public function getSuggestion($name)
     {
@@ -122,7 +128,7 @@ class ActiveDataProvider extends \yii\data\ActiveDataProvider
             $query->addOrderBy($sort->getOrders());
         }
 
-        if (is_array(($results = $query->search($this->db)))) {
+        if (is_array($results = $query->search($this->db))) {
             $this->setQueryResults($results);
             if ($pagination !== false) {
                 $pagination->totalCount = $this->getTotalCount();
@@ -160,21 +166,21 @@ class ActiveDataProvider extends \yii\data\ActiveDataProvider
                 if (is_string($this->key)) {
                     $keys[] = $model[$this->key];
                 } else {
-                    $keys[] = call_user_func($this->key, $model);
+                    $keys[] = ($this->key)($model);
                 }
             }
 
             return $keys;
-        } elseif ($this->query instanceof ActiveQueryInterface) {
+        }
+        if ($this->query instanceof ActiveQueryInterface) {
             /* @var $class \yii\elasticsearch\ActiveRecord */
             $class = $this->query->modelClass;
             foreach ($models as $model) {
                 $keys[] = $model->primaryKey;
             }
             return $keys;
-        } else {
-            return array_keys($models);
         }
+        return array_keys($models);
     }
 
     /**

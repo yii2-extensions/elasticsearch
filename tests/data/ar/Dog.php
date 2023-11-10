@@ -12,7 +12,6 @@ namespace yiiunit\extensions\elasticsearch\data\ar;
 class Dog extends Animal
 {
     /**
-     *
      * @param self $record
      * @param array $row
      */

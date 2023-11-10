@@ -21,7 +21,6 @@ class Record
         return $model;
     }
 
-
     public static function insertMany($modelClass, $rows)
     {
         $results = [];

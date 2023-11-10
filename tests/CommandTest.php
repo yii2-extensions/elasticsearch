@@ -8,6 +8,7 @@ use yii\elasticsearch\Command;
 
 /**
  * Class CommandTest
+ *
  * @package yiiunit\extensions\elasticsearch
  */
 class CommandTest extends TestCase
@@ -80,8 +81,8 @@ class CommandTest extends TestCase
 
     /**
      * @test
-     * @dataProvider provideDataForGetAliasInfo
      *
+     * @dataProvider provideDataForGetAliasInfo
      */
     public function getAliasInfo_singleAliasIsSet_returnsInfoForAlias(
         string $index,
@@ -165,7 +166,7 @@ class CommandTest extends TestCase
                     $index => [
                         'aliases' => [
                             $alias => $filter,
-                        ]
+                        ],
                     ],
                 ],
                 $filter,
@@ -196,7 +197,7 @@ class CommandTest extends TestCase
                         ],
                     ],
                 ],
-                $differentRouting
+                $differentRouting,
             ],
             [
                 $index,
@@ -206,7 +207,7 @@ class CommandTest extends TestCase
                 [
                     $index => [
                         'aliases' => [
-                            $alias => [...$filter, ...$singleExpectedRouting]
+                            $alias => [...$filter, ...$singleExpectedRouting],
                         ],
                     ],
                 ],
@@ -220,12 +221,12 @@ class CommandTest extends TestCase
                 [
                     $index => [
                         'aliases' => [
-                            $alias => [...$filter, ...$differentRouting]
+                            $alias => [...$filter, ...$differentRouting],
                         ],
                     ],
                 ],
                 [...$filter, ...$differentRouting],
-            ]
+            ],
         ];
     }
 
@@ -370,6 +371,7 @@ class CommandTest extends TestCase
 
     /**
      * @test
+     *
      * @todo maybe add more test with alias settings
      */
     public function getIndexAliases_SingleAliasIsSet_returnsDataForThatAlias(): void
@@ -390,6 +392,7 @@ class CommandTest extends TestCase
 
     /**
      * @test
+     *
      * @todo maybe add more test with alias settings
      */
     public function getIndexAliases_MultipleAliasesAreSet_returnsDataForThoseAliases(): void

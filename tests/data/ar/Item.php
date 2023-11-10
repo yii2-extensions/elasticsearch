@@ -9,9 +9,9 @@ use yii\elasticsearch\Command;
 /**
  * Class Item
  *
- * @property integer $id
+ * @property int $id
  * @property string $name
- * @property integer $category_id
+ * @property int $category_id
  */
 class Item extends ActiveRecord
 {
@@ -22,16 +22,16 @@ class Item extends ActiveRecord
 
     /**
      * sets up the index for this record
+     *
      * @param Command $command
      */
     public static function setUpMapping($command): void
     {
         $command->setMapping(static::index(), static::type(), [
-            "properties" => [
-                "name" => ["type" => "keyword", "store" => true],
-                "category_id" => ["type" => "integer"],
-            ]
+            'properties' => [
+                'name' => ['type' => 'keyword', 'store' => true],
+                'category_id' => ['type' => 'integer'],
+            ],
         ]);
-
     }
 }

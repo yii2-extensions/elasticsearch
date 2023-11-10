@@ -16,11 +16,12 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     public static $params;
 
-
     /**
      * Returns a test configuration param from /data/config.php
+     *
      * @param  string $name params name
      * @param  mixed $default default value to use when param is not set.
+     *
      * @return mixed  the value of the configuration param
      */
     public static function getParam($name, mixed $default = null)
@@ -45,6 +46,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     /**
      * Populates Yii::$app with a new application
      * The application will be destroyed on tearDown() automatically.
+     *
      * @param array $config The application configuration, if needed
      * @param string $appClass name of the application class to create
      */
@@ -66,10 +68,10 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             'components' => [
                 'request' => [
                     'cookieValidationKey' => 'wefJDF8sfdsfSDefwqdxj9oq',
-                    'scriptFile' => __DIR__ .'/index.php',
+                    'scriptFile' => __DIR__ . '/index.php',
                     'scriptUrl' => '/index.php',
                 ],
-            ]
+            ],
         ], $config));
     }
 
@@ -94,7 +96,8 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @param  boolean    $reset whether to clean up the test database
+     * @param  bool    $reset whether to clean up the test database
+     *
      * @return Connection
      */
     public function getConnection($reset = true)
@@ -110,10 +113,12 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     /**
      * Invokes a inaccessible method.
+     *
      * @param $object
      * @param $method
      * @param array $args
      * @param bool $revoke whether to make method inaccessible after execution
+     *
      * @return mixed
      */
     protected function invokeMethod($object, $method, $args = [], $revoke = true)

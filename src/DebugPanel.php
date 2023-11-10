@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 /**
  * @link https://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
@@ -84,7 +85,7 @@ EOD;
             $duration = sprintf('%.1f ms', $timing[3] * 1000);
             $message = $timing[1];
             $traces = $timing[4];
-            if (($pos = mb_strpos($message, "#")) !== false) {
+            if (($pos = mb_strpos($message, '#')) !== false) {
                 $url = mb_substr($message, 0, $pos);
                 $body = mb_substr($message, $pos + 1);
             } else {
@@ -123,7 +124,7 @@ $('#elastic-link-$i').on('click', function () {
     return false;
 });
 JS
-, View::POS_READY);
+                , View::POS_READY);
             $runLink = Html::a('run query', '#', ['id' => "elastic-link-$i"]) . '<br/>';
             $rows[] = <<<HTML
 <tr>
@@ -162,11 +163,11 @@ HTML;
         if ($this->_timings !== null) {
             return $this->_timings;
         }
-        $messages = isset($this->data['messages']) ? $this->data['messages'] : [];
+        $messages = $this->data['messages'] ?? [];
         $timings = [];
         $stack = [];
         foreach ($messages as $i => $log) {
-            list($token, $level, $category, $timestamp) = $log;
+            [$token, $level, $category, $timestamp] = $log;
             $log[5] = $i;
             if ($level == Logger::LEVEL_PROFILE_BEGIN) {
                 $stack[] = $log;

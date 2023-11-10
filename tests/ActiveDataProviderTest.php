@@ -58,17 +58,17 @@ class ActiveDataProviderTest extends TestCase
             'db' => $this->getConnection(),
         ]);
         $models = $provider->getModels();
-        $this->assertEquals(3, count($models));
+        $this->assertCount(3, $models);
 
         $provider = new ActiveDataProvider([
             'query' => $query,
             'db' => $this->getConnection(),
             'pagination' => [
                 'pageSize' => 1,
-            ]
+            ],
         ]);
         $models = $provider->getModels();
-        $this->assertEquals(1, count($models));
+        $this->assertCount(1, $models);
     }
 
     public function testGetAggregations(): void
@@ -76,16 +76,16 @@ class ActiveDataProviderTest extends TestCase
         $provider = new ActiveDataProvider([
             'query' => Customer::find()->addAggregate('agg_status', [
                 'terms' => [
-                    'field' => 'status'
-                ]
+                    'field' => 'status',
+                ],
             ]),
         ]);
         $models = $provider->getModels();
-        $this->assertEquals(3, count($models));
+        $this->assertCount(3, $models);
 
         $aggregations = $provider->getAggregations();
         $buckets = $aggregations['agg_status']['buckets'];
-        $this->assertEquals(2, count($buckets));
+        $this->assertCount(2, $buckets);
         $status_1 = $buckets[array_search(1, array_column($buckets, 'key'))];
         $status_2 = $buckets[array_search(2, array_column($buckets, 'key'))];
 
@@ -99,7 +99,7 @@ class ActiveDataProviderTest extends TestCase
             'query' => Customer::find(),
         ]);
         $models = $provider->getModels();
-        $this->assertEquals(3, count($models));
+        $this->assertCount(3, $models);
         $this->assertTrue($models[0] instanceof Customer);
         $this->assertTrue($models[1] instanceof Customer);
 
@@ -107,10 +107,10 @@ class ActiveDataProviderTest extends TestCase
             'query' => Customer::find(),
             'pagination' => [
                 'pageSize' => 1,
-            ]
+            ],
         ]);
         $models = $provider->getModels();
-        $this->assertEquals(1, count($models));
+        $this->assertCount(1, $models);
     }
 
     public function testNonexistentIndex(): void

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace yiiunit\extensions\elasticsearch;
+
 use yiiunit\extensions\elasticsearch\data\ar\Item;
 
 /**

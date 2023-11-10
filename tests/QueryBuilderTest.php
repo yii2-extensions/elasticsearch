@@ -38,10 +38,10 @@ class QueryBuilderTest extends TestCase
         $command = $this->getConnection()->createCommand();
         $command->setMapping('builder-test', 'article', [
             'properties' => [
-                'title' => ["type" => "keyword"],
-                'created_at' => ["type" => "keyword"],
-                'weight' => ["type" => "integer"],
-            ]
+                'title' => ['type' => 'keyword'],
+                'created_at' => ['type' => 'keyword'],
+                'weight' => ['type' => 'integer'],
+            ],
         ]);
         $command->insert('builder-test', 'article', ['title' => 'I love yii!', 'weight' => 1, 'created_at' => '2010-01-10'], 1);
         $command->insert('builder-test', 'article', ['title' => 'Symfony2 is another framework', 'weight' => 2, 'created_at' => '2010-01-15'], 2);
@@ -58,10 +58,10 @@ class QueryBuilderTest extends TestCase
         $query = new Query();
         $query->query = $queryParts;
         $build = $queryBuilder->build($query);
-        $this->assertTrue(array_key_exists('queryParts', $build));
-        $this->assertTrue(array_key_exists('query', $build['queryParts']));
+        $this->assertArrayHasKey('queryParts', $build);
+        $this->assertArrayHasKey('query', $build['queryParts']);
         $this->assertSame($queryParts, $build['queryParts']['query']);
-        $this->assertFalse(array_key_exists('match_all', $build['queryParts']), 'Match all should not be set');
+        $this->assertArrayNotHasKey('match_all', $build['queryParts'], 'Match all should not be set');
     }
 
     /**
@@ -72,9 +72,9 @@ class QueryBuilderTest extends TestCase
         $postFilter = [
             'bool' => [
                 'must' => [
-                    ['term' => ['title' => 'yii test']]
-                ]
-            ]
+                    ['term' => ['title' => 'yii test']],
+                ],
+            ],
         ];
         $queryBuilder = new QueryBuilder($this->getConnection());
         $query = new Query();
@@ -104,7 +104,7 @@ class QueryBuilderTest extends TestCase
                     [
                         'script_score' => [
                             'script' => "doc['weight'].getValue()",
-                        ]
+                        ],
                     ],
                 ],
             ],
@@ -134,12 +134,12 @@ class QueryBuilderTest extends TestCase
     public function testMltSearch(): void
     {
         $queryParts = [
-            "more_like_this" => [
-                "fields" => ["title"],
-                "like" => "Mention YII now",
-                "min_term_freq" => 1,
-                "min_doc_freq" => 1,
-            ]
+            'more_like_this' => [
+                'fields' => ['title'],
+                'like' => 'Mention YII now',
+                'min_term_freq' => 1,
+                'min_doc_freq' => 1,
+            ],
         ];
         $query = new Query();
         $query->from('builder-test', 'article');
@@ -220,10 +220,10 @@ class QueryBuilderTest extends TestCase
     {
         $titles = [
             'yii',
-            'test'
+            'test',
         ];
 
-        $query = (new Query)
+        $query = (new Query())
             ->from('builder-test', 'article')
             ->where(['not in', 'title', $titles]);
 
@@ -240,7 +240,7 @@ class QueryBuilderTest extends TestCase
             'nonexistent',
         ];
 
-        $query =  (new Query)
+        $query = (new Query())
             ->from('builder-test', 'article')
             ->where(['in', 'title', $titles]);
 
@@ -260,9 +260,9 @@ class QueryBuilderTest extends TestCase
         $expected = [
             'bool' => [
                 'must_not' => [
-                    'bool' => [ 'must' => [ ['term'=>['title'=>'xyz']] ] ],
+                    'bool' => [ 'must' => [ ['term' => ['title' => 'xyz']] ] ],
                 ],
-            ]
+            ],
         ];
         $result = $this->invokeMethod($qb, 'buildNotCondition', ['not',$operands]);
         $this->assertEquals($expected, $result);
@@ -278,7 +278,7 @@ class QueryBuilderTest extends TestCase
         ];
         $result = $this->invokeMethod($qb, 'buildInCondition', [
             'in',
-            ['foo',['bar1','bar2']]
+            ['foo',['bar1','bar2']],
         ]);
         $this->assertEquals($expected, $result);
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 /**
  * @link https://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
@@ -14,11 +15,11 @@ namespace yiiunit\extensions\elasticsearch\data\ar;
  * Class Animal
  *
  * @author Jose Lorente <jose.lorente.martin@gmail.com>
+ *
  * @since 2.0
  */
 class Animal extends ActiveRecord
 {
-
     public $does;
 
     public static function index()
@@ -38,14 +39,15 @@ class Animal extends ActiveRecord
 
     /**
      * sets up the index for this record
+     *
      * @param Command $command
      */
     public static function setUpMapping($command): void
     {
         $command->setMapping(static::index(), static::type(), [
-            "properties" => [
-                "species" => ["type" => "keyword"]
-            ]
+            'properties' => [
+                'species' => ['type' => 'keyword'],
+            ],
         ]);
     }
 
@@ -61,14 +63,13 @@ class Animal extends ActiveRecord
     }
 
     /**
-     *
      * @param type $row
+     *
      * @return \yiiunit\data\ar\elasticsearch\Animal
      */
     public static function instantiate($row)
     {
         $class = $row['_source']['species'];
-        return new $class;
+        return new $class();
     }
-
 }

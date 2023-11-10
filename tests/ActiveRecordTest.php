@@ -87,7 +87,7 @@ class ActiveRecordTest extends TestCase
             ['order_id' => 2, 'item_id' => 4, 'quantity' => 1, 'subtotal' => 10.0],
             ['order_id' => 2, 'item_id' => 5, 'quantity' => 1, 'subtotal' => 15.0],
             ['order_id' => 2, 'item_id' => 3, 'quantity' => 1, 'subtotal' => 8.0],
-            ['order_id' => 3, 'item_id' => 2, 'quantity' => 1, 'subtotal' => 40.0]
+            ['order_id' => 3, 'item_id' => 2, 'quantity' => 1, 'subtotal' => 40.0],
         ]);
         Record::refreshIndex(OrderItem::className(), $db);
 
@@ -162,7 +162,7 @@ class ActiveRecordTest extends TestCase
         // find by attributes
         $result = Customer::find()->where(['name' => 'user2'])->search()['hits'];
         $customer = reset($result['hits']);
-        $this->assertTrue($customer instanceof Customer);
+        $this->assertInstanceOf(Customer::class, $customer);
         $this->assertEquals(2, $customer->_id);
     }
 
@@ -171,8 +171,8 @@ class ActiveRecordTest extends TestCase
         $result = Customer::find()->addSuggester('customer_name', [
             'text' => 'user',
             'term' => [
-                'field' => 'name'
-            ]
+                'field' => 'name',
+            ],
         ])->search();
 
         $this->assertCount(3, $result['suggest']['customer_name'][0]['options']);
@@ -235,7 +235,7 @@ class ActiveRecordTest extends TestCase
     {
         $this->assertEquals(['_id'], Customer::primaryKey());
 
-        $customer = new Customer;
+        $customer = new Customer();
         $customer->email = 'user4@example.com';
         $customer->name = 'user4';
         $customer->address = 'address4';
@@ -258,7 +258,7 @@ class ActiveRecordTest extends TestCase
 
     public function testInsertPk(): void
     {
-        $customer = new Customer;
+        $customer = new Customer();
         $customer->_id = 5;
         $customer->email = 'user5@example.com';
         $customer->name = 'user5';
@@ -294,8 +294,8 @@ class ActiveRecordTest extends TestCase
                     'script' => [
                         'lang' => 'painless',
                         'inline' => "doc['quantity'].value * doc['subtotal'].value",
-                    ]
-                ]
+                    ],
+                ],
             ])->all();
         $this->assertNotEmpty($orderItems);
         foreach ($orderItems as $item) {
@@ -309,7 +309,7 @@ class ActiveRecordTest extends TestCase
         // indexBy + asArray
         $customers = Customer::find()->asArray()
             ->storedFields(['name'])->all();
-        $this->assertEquals(3, count($customers));
+        $this->assertCount(3, $customers);
         $this->assertArrayHasKey('name', $customers[0]['fields']);
         $this->assertArrayNotHasKey('email', $customers[0]['fields']);
         $this->assertArrayNotHasKey('address', $customers[0]['fields']);
@@ -521,9 +521,9 @@ class ActiveRecordTest extends TestCase
 
     public function testArrayAttributes(): void
     {
-        $this->assertTrue(is_array(Order::findOne(1)->itemsArray));
-        $this->assertTrue(is_array(Order::findOne(2)->itemsArray));
-        $this->assertTrue(is_array(Order::findOne(3)->itemsArray));
+        $this->assertIsArray(Order::findOne(1)->itemsArray);
+        $this->assertIsArray(Order::findOne(2)->itemsArray);
+        $this->assertIsArray(Order::findOne(3)->itemsArray);
     }
 
     public function testArrayAttributeRelationLazy(): void
@@ -631,13 +631,13 @@ class ActiveRecordTest extends TestCase
         Record::refreshIndex($order::className(), $order->db);
 
         $items = $order->itemsByArrayValue;
-        $this->assertEquals(1, count($items));
+        $this->assertCount(1, $items);
         $this->assertFalse(isset($items[$removeId]));
 
         // check also after refresh
         $this->assertTrue($order->refresh());
         $items = $order->itemsByArrayValue;
-        $this->assertEquals(1, count($items));
+        $this->assertCount(1, $items);
         $this->assertFalse(isset($items[$removeId]));
     }
 
@@ -647,7 +647,7 @@ class ActiveRecordTest extends TestCase
             /* @var $order Order */
             $order = Order::find()->where(['_id' => 1])->one();
             $items = $order->itemsByArrayValue;
-            $this->assertEquals(2, count($items));
+            $this->assertCount(2, $items);
             $this->assertTrue(isset($items[1]));
             $this->assertTrue(isset($items[2]));
             $order->unlinkAll('itemsByArrayValue');
@@ -688,7 +688,7 @@ class ActiveRecordTest extends TestCase
 
         /* @var $customer ActiveRecord */
         $customer = new $customerClass();
-        $this->assertTrue($customer instanceof $customerClass);
+        $this->assertInstanceOf($customerClass, $customer);
 
         $this->assertTrue($customer->canGetProperty('_id'));
         $this->assertTrue($customer->canSetProperty('_id'));
@@ -734,7 +734,6 @@ class ActiveRecordTest extends TestCase
 
     // TODO test AR with not mapped PK
 
-
     public static function illegalValuesForFindByCondition()
     {
         return [
@@ -745,8 +744,8 @@ class ActiveRecordTest extends TestCase
             ]], null],
             [['_id' => [
                 'nested_illegal' => [
-                    'false or 1=' => 1
-                ]
+                    'false or 1=' => 1,
+                ],
             ]], null],
 
             [['_id' => [
@@ -760,7 +759,7 @@ class ActiveRecordTest extends TestCase
                 '_id' => '1',
             ]], ['_id' => 1]],
             [['_id' => [
-                'name' => 'Cars'
+                'name' => 'Cars',
             ]], ['_id' => 5]],
         ];
     }

@@ -10,11 +10,11 @@ use yiiunit\extensions\elasticsearch\ActiveRecordTest;
 /**
  * Class Customer
  *
- * @property integer $id
+ * @property int $id
  * @property string $name
  * @property string $email
  * @property string $address
- * @property integer $status
+ * @property int $status
  * @property bool $is_active
  */
 class Customer extends ActiveRecord
@@ -53,25 +53,26 @@ class Customer extends ActiveRecord
 
     /**
      * sets up the index for this record
+     *
      * @param Command $command
-     * @param boolean $statusIsBoolean
+     * @param bool $statusIsBoolean
      */
     public static function setUpMapping($command): void
     {
         $command->setMapping(static::index(), static::type(), [
-            "properties" => [
-                "name" => ["type" => "keyword",  "store" => true],
-                "email" => ["type" => "keyword", "store" => true],
-                "address" => ["type" => "text"],
-                "status" => ["type" => "integer", "store" => true],
-                "is_active" => ["type" => "boolean", "store" => true],
-            ]
+            'properties' => [
+                'name' => ['type' => 'keyword',  'store' => true],
+                'email' => ['type' => 'keyword', 'store' => true],
+                'address' => ['type' => 'text'],
+                'status' => ['type' => 'integer', 'store' => true],
+                'is_active' => ['type' => 'boolean', 'store' => true],
+            ],
         ]);
-
     }
 
     /**
      * @inheritdoc
+     *
      * @return CustomerQuery
      */
     public static function find()
