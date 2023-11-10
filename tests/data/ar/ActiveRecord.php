@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace yiiunit\extensions\elasticsearch\data\ar;
 
+use yii\elasticsearch\Connection;
+
 /**
  * ActiveRecord is ...
  *
@@ -20,12 +22,12 @@ namespace yiiunit\extensions\elasticsearch\data\ar;
  */
 class ActiveRecord extends \yii\elasticsearch\ActiveRecord
 {
-    public static $db;
+    public static Connection $db;
 
     /**
-     * @return \yii\elasticsearch\Connection
+     * @return Connection
      */
-    public static function getDb()
+    public static function getDb(): Connection
     {
         return self::$db;
     }

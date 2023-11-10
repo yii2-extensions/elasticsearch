@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace yiiunit\extensions\elasticsearch\data\ar;
 
+use yii\db\ActiveQueryInterface;
 use yii\elasticsearch\Command;
 
 /**
@@ -23,12 +24,12 @@ class OrderItem extends ActiveRecord
         return ['order_id', 'item_id', 'quantity', 'subtotal'];
     }
 
-    public function getOrder()
+    public function getOrder(): ActiveQueryInterface
     {
         return $this->hasOne(Order::className(), ['_id' => 'order_id']);
     }
 
-    public function getItem()
+    public function getItem(): ActiveQueryInterface
     {
         return $this->hasOne(Item::className(), ['_id' => 'item_id']);
     }
@@ -38,15 +39,18 @@ class OrderItem extends ActiveRecord
      *
      * @param Command $command
      */
-    public static function setUpMapping($command): void
+    public static function setUpMapping(Command $command): void
     {
-        $command->setMapping(static::index(), static::type(), [
-            'properties' => [
-                'order_id' => ['type' => 'integer'],
-                'item_id' => ['type' => 'integer'],
-                'quantity' => ['type' => 'integer'],
-                'subtotal' => ['type' => 'integer'],
+        $command->setMapping(
+            static::index(),
+            static::type(), [
+                'properties' => [
+                    'order_id' => ['type' => 'integer'],
+                    'item_id' => ['type' => 'integer'],
+                    'quantity' => ['type' => 'integer'],
+                    'subtotal' => ['type' => 'integer'],
+                ],
             ],
-        ]);
+        );
     }
 }

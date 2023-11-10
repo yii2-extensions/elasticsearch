@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace yii\elasticsearch;
 
+use Yii;
 use yii\debug\Panel;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
@@ -19,6 +20,14 @@ use yii\helpers\Html;
 use yii\web\View;
 use yii\web\YiiAsset;
 
+use function array_pop;
+use function count;
+use function ksort;
+use function mb_strpos;
+use function microtime;
+use function number_format;
+use function sprintf;
+
 /**
  * Debugger panel that collects and displays Elasticsearch queries performed.
  *
@@ -26,12 +35,14 @@ use yii\web\YiiAsset;
  */
 class DebugPanel extends Panel
 {
-    public $db = 'elasticsearch';
+    public string $db = 'elasticsearch';
+
+    private array|null $_timings = null;
 
     public function init(): void
     {
         $this->actions['elasticsearch-query'] = [
-            'class' => 'yii\\elasticsearch\\DebugAction',
+            'class' => DebugAction::class,
             'panel' => $this,
             'db' => $this->db,
         ];
@@ -51,13 +62,17 @@ class DebugPanel extends Panel
     public function getSummary(): string
     {
         $timings = $this->calculateTimings();
+
         $queryCount = count($timings);
         $queryTime = 0;
+
         foreach ($timings as $timing) {
             $queryTime += $timing[3];
         }
+
         $queryTime = number_format($queryTime * 1000) . ' ms';
         $url = $this->getUrl();
+
         $output = <<<EOD
 <div class="yii-debug-toolbar__block">
     <a href="$url" title="Executed $queryCount Elasticsearch queries which took $queryTime.">
@@ -75,16 +90,20 @@ EOD;
     public function getDetail(): string
     {
         //Register YiiAsset in order to inject csrf token in ajax requests
-        YiiAsset::register(\Yii::$app->view);
+        YiiAsset::register(Yii::$app->view);
 
         $timings = $this->calculateTimings();
+
         ArrayHelper::multisort($timings, 3, SORT_DESC);
+
         $rows = [];
         $i = 0;
+
         foreach ($timings as $logId => $timing) {
             $duration = sprintf('%.1f ms', $timing[3] * 1000);
             $message = $timing[1];
             $traces = $timing[4];
+
             if (($pos = mb_strpos($message, '#')) !== false) {
                 $url = mb_substr($message, 0, $pos);
                 $body = mb_substr($message, $pos + 1);
@@ -92,7 +111,9 @@ EOD;
                 $url = $message;
                 $body = null;
             }
+
             $traceString = '';
+
             if (!empty($traces)) {
                 $traceString .= Html::ul($traces, [
                     'class' => 'trace',
@@ -101,8 +122,10 @@ EOD;
                     },
                 ]);
             }
+
             $ajaxUrl = Url::to(['elasticsearch-query', 'logId' => $logId, 'tag' => $this->tag]);
-            \Yii::$app->view->registerJs(<<<JS
+
+            Yii::$app->view->registerJs(<<<JS
 $('#elastic-link-$i').on('click', function () {
     var result = $('#elastic-result-$i');
     result.html('Sending request...');
@@ -156,22 +179,22 @@ $rows
 HTML;
     }
 
-    private $_timings;
-
-    public function calculateTimings()
+    public function calculateTimings(): array
     {
         if ($this->_timings !== null) {
             return $this->_timings;
         }
+
         $messages = $this->data['messages'] ?? [];
         $timings = [];
         $stack = [];
+
         foreach ($messages as $i => $log) {
             [$token, $level, $category, $timestamp] = $log;
             $log[5] = $i;
-            if ($level == Logger::LEVEL_PROFILE_BEGIN) {
+            if ($level === Logger::LEVEL_PROFILE_BEGIN) {
                 $stack[] = $log;
-            } elseif ($level == Logger::LEVEL_PROFILE_END) {
+            } elseif ($level === Logger::LEVEL_PROFILE_END) {
                 if (($last = array_pop($stack)) !== null && $last[0] === $token) {
                     $timings[$last[5]] = [count($stack), $token, $last[3], $timestamp - $last[3], $last[4]];
                 }
@@ -179,10 +202,12 @@ HTML;
         }
 
         $now = microtime(true);
+
         while (($last = array_pop($stack)) !== null) {
             $delta = $now - $last[3];
             $timings[$last[5]] = [count($stack), $last[0], $last[2], $delta, $last[4]];
         }
+
         ksort($timings);
 
         return $this->_timings = $timings;
@@ -194,7 +219,10 @@ HTML;
     public function save(): mixed
     {
         $target = $this->module->logTarget;
-        $messages = $target->filterMessages($target->messages, Logger::LEVEL_PROFILE, ['yii\elasticsearch\Connection::httpRequest']);
+        $messages = $target->filterMessages(
+            $target->messages,
+            Logger::LEVEL_PROFILE, ['yii\elasticsearch\Connection::httpRequest'],
+        );
 
         return ['messages' => $messages];
     }

@@ -392,10 +392,11 @@ class QueryTest extends TestCase
         $postFilter = [
             'term' => ['status' => 2],
         ];
+
         $query = new Query();
         $query->from('query-test', 'user');
         $query->postFilter($postFilter);
-        $query->addAggregation('statuses', 'terms', ['field' => 'status']);
+        $query->addAggregate('statuses', ['terms' => ['field' => 'status']]);
         $result = $query->search($this->getConnection());
         $total = is_array($result['hits']['total']) ? $result['hits']['total']['value'] : $result['hits']['total'];
         $this->assertEquals(3, $total);

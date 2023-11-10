@@ -11,7 +11,7 @@ use yii\elasticsearch\ActiveQuery;
  */
 class CustomerQuery extends ActiveQuery
 {
-    public function active()
+    public function active(): static
     {
         $this->andWhere(['status' => 1]);
 

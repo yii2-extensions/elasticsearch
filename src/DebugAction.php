@@ -12,11 +12,17 @@ declare(strict_types=1);
 namespace yii\elasticsearch;
 
 use yii\base\Action;
+use yii\base\InvalidConfigException;
 use yii\base\NotSupportedException;
 use yii\helpers\ArrayHelper;
 use yii\web\HttpException;
 use yii\web\Response;
 use Yii;
+
+use function mb_strpos;
+use function mb_substr;
+use function microtime;
+use function sprintf;
 
 /**
  * Debug Action is used by [[DebugPanel]] to perform Elasticsearch queries using ajax.
@@ -28,25 +34,30 @@ class DebugAction extends Action
     /**
      * @var string the connection id to use
      */
-    public $db;
+    public string $db = '';
     /**
-     * @var DebugPanel
+     * @var DebugPanel|null
      */
-    public $panel;
-    /**
-     * @var \yii\debug\controllers\DefaultController
-     */
+    public DebugPanel|null $panel = null;
     public $controller;
 
-    public function run($logId, $tag)
+    /**
+     * @throws NotSupportedException
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws HttpException
+     */
+    public function run($logId, $tag): array
     {
         $this->controller->loadData($tag);
 
         $timings = $this->panel->calculateTimings();
         ArrayHelper::multisort($timings, 3, SORT_DESC);
+
         if (!isset($timings[$logId])) {
             throw new HttpException(404, 'Log message not found.');
         }
+
         $message = $timings[$logId][1];
         if (($pos = mb_strpos($message, '#')) !== false) {
             $url = mb_substr($message, 0, $pos);
@@ -61,22 +72,18 @@ class DebugAction extends Action
         $options = ['pretty' => 'true'];
 
         /* @var $db Connection */
-        $db = \Yii::$app->get($this->db);
+        $db = Yii::$app->get($this->db);
         $time = microtime(true);
-        switch ($method) {
-            case 'GET': $result = $db->get($url, $options, $body, true);
-                break;
-            case 'POST': $result = $db->post($url, $options, $body, true);
-                break;
-            case 'PUT': $result = $db->put($url, $options, $body, true);
-                break;
-            case 'DELETE': $result = $db->delete($url, $options, $body, true);
-                break;
-            case 'HEAD': $result = $db->head($url, $options, $body);
-                break;
-            default:
-                throw new NotSupportedException("Request method '$method' is not supported by Elasticsearch.");
-        }
+
+        $result = match ($method) {
+            'GET' => $db->get($url, $options, $body, true),
+            'POST' => $db->post($url, $options, $body, true),
+            'PUT' => $db->put($url, $options, $body, true),
+            'DELETE' => $db->delete($url, $options, $body, true),
+            'HEAD' => $db->head($url, $options, $body),
+            default => throw new NotSupportedException("Request method '$method' is not supported by Elasticsearch."),
+        };
+
         $time = microtime(true) - $time;
 
         if ($result === true) {

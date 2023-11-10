@@ -11,8 +11,14 @@ declare(strict_types=1);
 
 namespace yii\elasticsearch;
 
-use ReturnTypeWillChange;
+use Iterator;
 use yii\base\BaseObject;
+use yii\base\InvalidConfigException;
+use yii\db\DataReader;
+
+use function current;
+use function key;
+use function reset;
 
 /**
  * BatchQueryResult represents a batch query from which you can retrieve data in batches.
@@ -41,70 +47,74 @@ use yii\base\BaseObject;
  *
  * @author Konstantin Sirotkin <beowulfenator@gmail.com>
  */
-class BatchQueryResult extends BaseObject implements \Iterator
+class BatchQueryResult extends BaseObject implements Iterator
 {
     /**
-     * @var Connection the DB connection to be used when performing batch query.
+     * @var Connection|null the DB connection to be used when performing a batch query.
      * If null, the `elasticsearch` application component will be used.
      */
-    public $db;
+    public Connection|null $db = null;
     /**
-     * @var Query the query object associated with this batch query.
+     * @var Query|null the query object associated with this batch query.
      * Do not modify this property directly unless after [[reset()]] is called explicitly.
      */
-    public $query;
+    public Query|null $query = null;
     /**
      * @var bool whether to return a single row during each iteration.
      * If false, a whole batch of rows will be returned in each iteration.
      */
-    public $each = false;
+    public bool $each = false;
     /**
-     * @var DataReader the data reader associated with this batch query.
+     * @var DataReader|null the data reader associated with this batch query.
      */
-    private $_dataReader;
+    private DataReader|null $_dataReader = null;
     /**
      * @var array the data retrieved in the current batch
      */
-    private $_batch;
+    private array $_batch = [];
     /**
      * @var mixed the value for the current iteration
      */
-    private $_value;
+    private mixed $_value = null;
     /**
-     * @var int|string the key for the current iteration
+     * @var int|string|null the key for the current iteration
      */
-    private $_key;
+    private string|int|null $_key = null;
     /**
      * @var string the amount of time to keep the scroll window open
      * (in Elasticsearch [time units](https://www.elastic.co/guide/en/elasticsearch/reference/current/common-options.html#time-units).
      */
-    public $scrollWindow = '1m';
-
-    /*
-     * @var string internal Elasticsearch scroll id
-     */
-    private $_lastScrollId = null;
+    public string $scrollWindow = '1m';
 
     /**
-     * Destructor.
+     * @var string|null elasticsearch scroll id.
+     */
+    private string|null $_lastScrollId = null;
+
+    /**
+     * @throws InvalidConfigException
+     * @throws Exception
      */
     public function __destruct()
     {
-        // make sure cursor is closed
+        // make sure the cursor is closed
         $this->reset();
     }
 
     /**
      * Resets the batch query.
      * This method will clean up the existing batch query so that a new batch query can be performed.
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
      */
-    public function reset()
+    public function reset(): void
     {
         if (isset($this->_lastScrollId)) {
             $this->query->createCommand($this->db)->clearScroll(['scroll_id' => $this->_lastScrollId]);
         }
 
-        $this->_batch = null;
+        $this->_batch = [];
         $this->_value = null;
         $this->_key = null;
         $this->_lastScrollId = null;
@@ -113,9 +123,11 @@ class BatchQueryResult extends BaseObject implements \Iterator
     /**
      * Resets the iterator to the initial state.
      * This method is required by the interface [[\Iterator]].
+     *
+     * @throws InvalidConfigException
+     * @throws Exception
      */
-    #[ReturnTypeWillChange]
-    public function rewind()
+    public function rewind(): void
     {
         $this->reset();
         $this->next();
@@ -124,11 +136,13 @@ class BatchQueryResult extends BaseObject implements \Iterator
     /**
      * Moves the internal pointer to the next dataset.
      * This method is required by the interface [[\Iterator]].
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
      */
-    #[ReturnTypeWillChange]
-    public function next()
+    public function next(): void
     {
-        if ($this->_batch === null || !$this->each || $this->each && next($this->_batch) === false) {
+        if ($this->_batch === [] || !$this->each || (next($this->_batch) === false)) {
             $this->_batch = $this->fetchData();
             reset($this->_batch);
         }
@@ -152,20 +166,24 @@ class BatchQueryResult extends BaseObject implements \Iterator
      * Fetches the next batch of data.
      *
      * @return array the data fetched
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
      */
-    protected function fetchData()
+    protected function fetchData(): array
     {
         if (null === $this->_lastScrollId) {
             //first query - do search
             $options = ['scroll' => $this->scrollWindow];
+
             if (!$this->query->orderBy) {
                 $query = clone $this->query;
                 $query->orderBy('_doc');
-                $cmd = $this->query->createCommand($this->db);
-            } else {
-                $cmd = $this->query->createCommand($this->db);
             }
+
+            $cmd = $this->query->createCommand($this->db);
             $result = $cmd->search($options);
+
             if ($result === false) {
                 throw new Exception('Elasticsearch search query failed.');
             }
@@ -188,10 +206,9 @@ class BatchQueryResult extends BaseObject implements \Iterator
      * Returns the index of the current dataset.
      * This method is required by the interface [[\Iterator]].
      *
-     * @return int the index of the current row.
+     * @return int|string|null the index of the current row.
      */
-    #[ReturnTypeWillChange]
-    public function key()
+    public function key(): int|string|null
     {
         return $this->_key;
     }
@@ -202,8 +219,7 @@ class BatchQueryResult extends BaseObject implements \Iterator
      *
      * @return mixed the current dataset.
      */
-    #[ReturnTypeWillChange]
-    public function current()
+    public function current(): mixed
     {
         return $this->_value;
     }
@@ -214,8 +230,7 @@ class BatchQueryResult extends BaseObject implements \Iterator
      *
      * @return bool whether there is a valid dataset at the current position.
      */
-    #[ReturnTypeWillChange]
-    public function valid()
+    public function valid(): bool
     {
         return !empty($this->_batch);
     }

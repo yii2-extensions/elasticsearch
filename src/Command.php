@@ -11,10 +11,20 @@ declare(strict_types=1);
 
 namespace yii\elasticsearch;
 
+use JsonException;
+use stdClass;
 use yii\base\Component;
 use yii\base\InvalidCallException;
+use yii\base\InvalidConfigException;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
+
+use function array_filter;
+use function array_keys;
+use function array_merge;
+use function is_array;
+use function is_string;
+use function json_encode;
 
 /**
  * The Command class implements the API for accessing the Elasticsearch REST API.
@@ -26,49 +36,49 @@ use yii\helpers\Json;
  */
 class Command extends Component
 {
+    public Connection|null $db = null;
     /**
-     * @var Connection
-     */
-    public $db;
-    /**
-     * @var array|string the indexes to execute the query on. Defaults to null meaning all indexes
+     * @var array|string|null the indexes to execute the query on. Defaults to null meaning all indexes
      *
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/search-search.html#search-multi-index-type
      */
-    public $index;
+    public array|string|null $index = null;
     /**
      * @var array|string|null the types to execute the query on. Defaults to null meaning all types
      */
-    public $type;
+    public string|array|null $type = null;
     /**
      * @var array list of arrays or json strings that become parts of a query
      */
-    public $queryParts;
+    public array $queryParts = [];
     /**
-     * @var array options to be appended to the query URL, such as "search_type" for search or "timeout" for delete
+     * @var array options to be appended to the query URL, such as "search_type" for search or "timeout" for deleting
      */
-    public $options = [];
+    public array $options = [];
 
     /**
      * Sends a request to the _search API and returns the result
      *
      * @param array $options URL options
      *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
-     *
      * @return mixed
+     *@throws InvalidConfigException
+     *
+     * @throws Exception
      */
-    public function search($options = [])
+    public function search(array $options = []): mixed
     {
         $query = $this->queryParts;
+
         if (empty($query)) {
             $query = '{}';
         }
+
         if (is_array($query)) {
             $query = Json::encode($query);
         }
-        $url = [$this->index !== null ? $this->index : '_all'];
+
+        $url = [$this->index ?? '_all'];
 
         if ($this->db->dslVersion < 7 && $this->type !== null) {
             $url[] = $this->type;
@@ -80,63 +90,66 @@ class Command extends Component
     }
 
     /**
-     * Sends a request to the delete by query
+     * Sends a request to the deleting by query
      *
      * @param array $options URL options
      *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
-     *
      * @return mixed
+     *@throws InvalidConfigException
+     *
+     * @throws Exception
      */
-    public function deleteByQuery($options = [])
+    public function deleteByQuery(array $options = []): mixed
     {
         if (!isset($this->queryParts['query'])) {
             throw new InvalidCallException('Can not call deleteByQuery when no query is given.');
         }
+
         $query = [
             'query' => $this->queryParts['query'],
         ];
+
         if (isset($this->queryParts['filter'])) {
             $query['filter'] = $this->queryParts['filter'];
         }
+
         $query = Json::encode($query);
-        $url = [$this->index !== null ? $this->index : '_all'];
+        $url = [$this->index ?? '_all'];
+
         if ($this->type !== null) {
             $url[] = $this->type;
         }
+
         $url[] = '_delete_by_query';
 
         return $this->db->post($url, array_merge($this->options, $options), $query);
     }
 
     /**
-     * Sends a suggest request to the _search API and returns the result
+     * Sends a suggested request to the _search API and returns the result
      *
      * @param array|string $suggester the suggester body
      * @param array $options URL options
      *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
-     *
      * @return mixed
      *
+     * @throws InvalidConfigException
+     *
+     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/search-suggesters.html
      */
-    public function suggest($suggester, $options = [])
+    public function suggest(array|string $suggester, array $options = []): mixed
     {
         if (empty($suggester)) {
             $suggester = '{}';
         }
+
         if (is_array($suggester)) {
             $suggester = Json::encode($suggester);
         }
-        $body = '{"suggest":' . $suggester . ',"size":0}';
-        $url = [
-            $this->index !== null ? $this->index : '_all',
-            '_search',
-        ];
 
+        $body = '{"suggest":' . $suggester . ',"size":0}';
+        $url = [$this->index ?? '_all', '_search'];
         $result = $this->db->post($url, array_merge($this->options, $options), $body);
 
         return $result['suggest'];
@@ -148,18 +161,23 @@ class Command extends Component
      * @param string $index Index that the document belongs to.
      * @param string|null $type Type that the document belongs to.
      * @param array|string $data json string or array of data to store
-     * @param string|null $id the documents id. If not specified Id will be automatically chosen
+     * @param string|int|null $id the documents' id. If not specified, I'd will be automatically chosen
      * @param array $options URL options
-     *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
      *
      * @return mixed
      *
+     * @throws InvalidConfigException
+     *
+     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html
      */
-    public function insert($index, $type, $data, $id = null, $options = [])
-    {
+    public function insert(
+        string $index,
+        string|null $type,
+        array|string $data,
+        string|int $id = null,
+        array $options = []
+    ): mixed {
         if (empty($data)) {
             $body = '{}';
         } else {
@@ -172,9 +190,11 @@ class Command extends Component
             }
             return $this->db->put([$index, $type, $id], $options, $body);
         }
+
         if ($this->db->dslVersion >= 7) {
             return $this->db->post([$index, '_doc'], $options, $body);
         }
+
         return $this->db->post([$index, $type], $options, $body);
     }
 
@@ -183,21 +203,21 @@ class Command extends Component
      *
      * @param string $index Index that the document belongs to.
      * @param string|null $type Type that the document belongs to.
-     * @param string $id the documents id.
+     * @param string|int|null $id the documents' id.
      * @param array $options URL options
-     *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
      *
      * @return mixed
      *
+     * @throws Exception
+     * @throws InvalidConfigException
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html
      */
-    public function get($index, $type, $id, $options = [])
+    public function get(string $index, string|null $type, string|int $id = null, array $options = []): mixed
     {
         if ($this->db->dslVersion >= 7) {
             return $this->db->get([$index, '_doc', $id], $options);
         }
+
         return $this->db->get([$index, $type, $id], $options);
     }
 
@@ -208,23 +228,24 @@ class Command extends Component
      *
      * @param string $index Index that the document belongs to.
      * @param string|null $type Type that the document belongs to.
-     * @param string[] $ids the documents ids as values in array.
+     * @param string[] $ids the documents ids as values in an array.
      * @param array $options URL options
-     *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
      *
      * @return mixed
      *
+     * @throws InvalidConfigException
+     *
+     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-multi-get.html
      */
-    public function mget($index, $type, $ids, $options = [])
+    public function mget(string $index, ?string $type, array $ids, array $options = []): mixed
     {
         $body = Json::encode(['ids' => array_values($ids)]);
 
         if ($this->db->dslVersion >= 7) {
             return $this->db->get([$index, '_mget'], $options, $body);
         }
+
         return $this->db->get([$index, $type, '_mget'], $options, $body);
     }
 
@@ -233,20 +254,21 @@ class Command extends Component
      *
      * @param string $index Index that the document belongs to.
      * @param string|null $type Type that the document belongs to.
-     * @param string $id the documents id.
-     *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
+     * @param string $id the documents' id.
      *
      * @return mixed
      *
+     * @throws InvalidConfigException
+     *
+     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html#_source
      */
-    public function getSource($index, $type, $id)
+    public function getSource(string $index, ?string $type, string $id): mixed
     {
         if ($this->db->dslVersion >= 7) {
             return $this->db->get([$index, '_doc', $id]);
         }
+
         return $this->db->get([$index, $type, $id]);
     }
 
@@ -255,20 +277,21 @@ class Command extends Component
      *
      * @param string $index Index that the document belongs to.
      * @param string|null $type Type that the document belongs to.
-     * @param string $id the documents id.
-     *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
+     * @param string $id the documents' id.
      *
      * @return mixed
      *
+     * @throws InvalidConfigException
+     *
+     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-get.html
      */
-    public function exists($index, $type, $id)
+    public function exists(string $index, string|null $type, string $id): mixed
     {
         if ($this->db->dslVersion >= 7) {
             return $this->db->head([$index, '_doc', $id]);
         }
+
         return $this->db->head([$index, $type, $id]);
     }
 
@@ -277,21 +300,22 @@ class Command extends Component
      *
      * @param string $index Index that the document belongs to.
      * @param string|null $type Type that the document belongs to.
-     * @param string $id the documents id.
+     * @param string $id the documents' id.
      * @param array $options URL options
-     *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
      *
      * @return mixed
      *
+     * @throws InvalidConfigException
+     *
+     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-delete.html
      */
-    public function delete($index, $type, $id, $options = [])
+    public function delete(string $index, string|null $type, string $id, array $options = []): mixed
     {
         if ($this->db->dslVersion >= 7) {
             return $this->db->delete([$index, '_doc', $id], $options);
         }
+
         return $this->db->delete([$index, $type, $id], $options);
     }
 
@@ -300,22 +324,21 @@ class Command extends Component
      *
      * @param string $index Index that the document belongs to.
      * @param string|null $type Type that the document belongs to.
-     * @param string $id the documents id.
-     * @param mixed $data
+     * @param string $id the documents' id.
+     * @param mixed $data the documents' data.
      * @param array $options URL options
-     *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
      *
      * @return mixed
      *
+     * @throws InvalidConfigException
+     *
+     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html
      */
-    public function update($index, $type, $id, $data, $options = [])
+    public function update(string $index, string|null $type, string $id, mixed $data, array $options = []): mixed
     {
-        $body = [
-            'doc' => empty($data) ? new \stdClass() : $data,
-        ];
+        $body = ['doc' => empty($data) ? new stdClass() : $data];
+
         if (isset($options['detect_noop'])) {
             $body['detect_noop'] = $options['detect_noop'];
             unset($options['detect_noop']);
@@ -324,6 +347,7 @@ class Command extends Component
         if ($this->db->dslVersion >= 7) {
             return $this->db->post([$index, '_update', $id], $options, Json::encode($body));
         }
+
         return $this->db->post([$index, $type, $id, '_update'], $options, Json::encode($body));
     }
 
@@ -335,14 +359,14 @@ class Command extends Component
      * @param string $index Index that the document belongs to.
      * @param array|null $configuration
      *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
-     *
      * @return mixed
      *
+     * @throws InvalidConfigException
+     *
+     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html
      */
-    public function createIndex($index, $configuration = null)
+    public function createIndex(string $index, array $configuration = null): mixed
     {
         $body = $configuration !== null ? Json::encode($configuration) : null;
 
@@ -354,14 +378,14 @@ class Command extends Component
      *
      * @param string $index Index that the document belongs to.
      *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
-     *
      * @return mixed
      *
+     * @throws InvalidConfigException
+     *
+     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-delete-index.html
      */
-    public function deleteIndex($index)
+    public function deleteIndex(string $index): mixed
     {
         return $this->db->delete([$index]);
     }
@@ -370,13 +394,13 @@ class Command extends Component
      * deletes all indexes
      *
      * @throws Exception
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      *
      * @return mixed
      *
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-delete-index.html
      */
-    public function deleteAllIndexes()
+    public function deleteAllIndexes(): mixed
     {
         return $this->db->delete(['_all']);
     }
@@ -386,14 +410,14 @@ class Command extends Component
      *
      * @param string $index Index that the document belongs to.
      *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
-     *
      * @return mixed
      *
+     * @throws InvalidConfigException
+     *
+     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-exists.html
      */
-    public function indexExists($index)
+    public function indexExists(string $index): mixed
     {
         return $this->db->head([$index]);
     }
@@ -402,30 +426,31 @@ class Command extends Component
      * @param string $index Index that the document belongs to.
      * @param string|null $type Type that the document belongs to.
      *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
-     *
      * @return mixed
      *
+     * @throws InvalidConfigException
+     *
+     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-types-exists.html
      */
-    public function typeExists($index, $type)
+    public function typeExists(string $index, string|null $type): mixed
     {
         if ($this->db->dslVersion >= 7) {
             return $this->db->head([$index, '_doc']);
         }
+
         return $this->db->head([$index, $type]);
     }
 
     /**
      * @param string $alias
      *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
-     *
      * @return bool
+     *@throws InvalidConfigException
+     *
+     * @throws Exception
      */
-    public function aliasExists($alias)
+    public function aliasExists(string $alias): bool
     {
         $indexes = $this->getIndexesByAlias($alias);
 
@@ -434,31 +459,33 @@ class Command extends Component
 
     /**
      * @throws Exception
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      *
      * @return array
      *
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/2.0/indices-aliases.html#alias-retrieving
      */
-    public function getAliasInfo()
+    public function getAliasInfo(): array
     {
         $aliasInfo = $this->db->get(['_alias', '*']);
+
         return $aliasInfo ?: [];
     }
 
     /**
      * @param string $alias
      *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
-     *
      * @return array
      *
+     * @throws InvalidConfigException
+     *
+     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/2.0/indices-aliases.html#alias-retrieving
      */
-    public function getIndexInfoByAlias($alias)
+    public function getIndexInfoByAlias(string $alias): array
     {
         $responseData = $this->db->get(['_alias', $alias]);
+
         if (empty($responseData)) {
             return [];
         }
@@ -469,12 +496,12 @@ class Command extends Component
     /**
      * @param string $alias
      *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
-     *
      * @return array
+     *@throws InvalidConfigException
+     *
+     * @throws Exception
      */
-    public function getIndexesByAlias($alias)
+    public function getIndexesByAlias(string $alias): array
     {
         return array_keys($this->getIndexInfoByAlias($alias));
     }
@@ -482,16 +509,17 @@ class Command extends Component
     /**
      * @param string $index Index that the document belongs to.
      *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
-     *
      * @return array
      *
+     * @throws InvalidConfigException
+     *
+     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/2.0/indices-aliases.html#alias-retrieving
      */
-    public function getIndexAliases($index)
+    public function getIndexAliases(string $index): array
     {
         $responseData = $this->db->get([$index, '_alias', '*']);
+
         if (empty($responseData)) {
             return [];
         }
@@ -504,38 +532,43 @@ class Command extends Component
      * @param string $alias
      * @param array $aliasParameters
      *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
-     *
      * @return bool
      *
+     * @throws InvalidConfigException
+     *
+     * @throws Exception
+     * @throws JsonException
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/2.0/indices-aliases.html#alias-adding
      */
-    public function addAlias($index, $alias, $aliasParameters = [])
+    public function addAlias(string $index, string $alias, array $aliasParameters = []): bool
     {
-        return (bool)$this->db->put([$index, '_alias', $alias], [], json_encode((object)$aliasParameters));
+        return (bool) $this->db->put(
+            [$index, '_alias', $alias],
+            [],
+            json_encode((object) $aliasParameters, JSON_THROW_ON_ERROR),
+        );
     }
 
     /**
      * @param string $index Index that the document belongs to.
      * @param string $alias
      *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
-     *
      * @return bool
      *
+     * @throws InvalidConfigException
+     *
+     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/2.0/indices-aliases.html#deleting
      */
-    public function removeAlias($index, $alias)
+    public function removeAlias(string $index, string $alias): bool
     {
-        return (bool)$this->db->delete([$index, '_alias', $alias]);
+        return (bool) $this->db->delete([$index, '_alias', $alias]);
     }
 
     /**
      * Runs alias manipulations.
      * If you want to add alias1 to index1
-     * and remove alias2 from index2 you can use following commands:
+     * and remove alias2 from index2 you can use the following commands:
      * ~~~
      * $actions = [
      *      ['add' => ['index' => 'index1', 'alias' => 'alias1']],
@@ -545,16 +578,17 @@ class Command extends Component
      *
      * @param array $actions
      *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
-     *
      * @return bool
+     *
+     * @throws InvalidConfigException
+     * @throws JsonException
+     * @throws Exception
      *
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/2.0/indices-aliases.html#indices-aliases
      */
-    public function aliasActions(array $actions)
+    public function aliasActions(array $actions): bool
     {
-        return (bool)$this->db->post(['_aliases'], [], json_encode(['actions' => $actions]));
+        return (bool) $this->db->post(['_aliases'], [], json_encode(['actions' => $actions], JSON_THROW_ON_ERROR));
     }
 
     /**
@@ -563,25 +597,30 @@ class Command extends Component
      * use [[updateAnalyzers()]] for it.
      *
      * @param string $index Index that the document belongs to.
-     * @param array|string $setting
+     * @param array|string|null $setting
      * @param array $options URL options
-     *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
      *
      * @return mixed
      *
+     * @throws InvalidConfigException
+     *
+     * @throws Exception
      * @see https://www.elasticsearch.org/guide/en/elasticsearch/reference/current/indices-update-settings.html
      */
-    public function updateSettings($index, $setting, $options = [])
+    public function updateSettings(string $index, array|string $setting = null, array $options = []): mixed
     {
-        $body = $setting !== null ? (is_string($setting) ? $setting : Json::encode($setting)) : null;
+        if ($setting !== null) {
+            $body = is_string($setting) ? $setting : Json::encode($setting);
+        } else {
+            $body = null;
+        }
+
         return $this->db->put([$index, '_settings'], $options, $body);
     }
 
     /**
      * Define new analyzers for the index.
-     * For example if content analyzer hasn’t been defined on "myindex" yet
+     * For example, if content analyzer hasn’t been defined on "myindex" yet
      * you can use the following commands to add it:
      *
      * ~~~
@@ -610,18 +649,19 @@ class Command extends Component
      * @param array|string $setting
      * @param array $options URL options
      *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
-     *
      * @return mixed
      *
+     * @throws InvalidConfigException
+     *
+     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-update-settings.html#update-settings-analysis
      */
-    public function updateAnalyzers($index, $setting, $options = [])
+    public function updateAnalyzers(string $index, array|string $setting, array $options = []): mixed
     {
         $this->closeIndex($index);
         $result = $this->updateSettings($index, $setting, $options);
         $this->openIndex($index);
+
         return $result;
     }
 
@@ -632,14 +672,14 @@ class Command extends Component
     /**
      * @param string $index Index that the document belongs to.
      *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
-     *
      * @return mixed
      *
+     * @throws InvalidConfigException
+     *
+     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-open-close.html
      */
-    public function openIndex($index)
+    public function openIndex(string $index): mixed
     {
         return $this->db->post([$index, '_open']);
     }
@@ -647,14 +687,14 @@ class Command extends Component
     /**
      * @param string $index Index that the document belongs to.
      *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
-     *
      * @return mixed
+     *
+     * @throws InvalidConfigException
+     * @throws Exception
      *
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-open-close.html
      */
-    public function closeIndex($index)
+    public function closeIndex(string $index): mixed
     {
         return $this->db->post([$index, '_close']);
     }
@@ -662,19 +702,22 @@ class Command extends Component
     /**
      * @param array $options URL options
      *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
-     *
      * @return mixed
+     *
+     * @throws InvalidConfigException
+     * @throws Exception
      *
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-scroll.html
      */
-    public function scroll($options = [])
+    public function scroll(array $options = []): mixed
     {
-        $body = array_filter([
-            'scroll' => ArrayHelper::remove($options, 'scroll', null),
-            'scroll_id' => ArrayHelper::remove($options, 'scroll_id', null),
-        ]);
+        $body = array_filter(
+            [
+                'scroll' => ArrayHelper::remove($options, 'scroll'),
+                'scroll_id' => ArrayHelper::remove($options, 'scroll_id'),
+            ],
+        );
+
         if (empty($body)) {
             $body = (object) [];
         }
@@ -685,18 +728,21 @@ class Command extends Component
     /**
      * @param array $options URL options
      *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
-     *
      * @return mixed
      *
+     * @throws InvalidConfigException
+     *
+     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-scroll.html
      */
-    public function clearScroll($options = [])
+    public function clearScroll(array $options = []): mixed
     {
-        $body = array_filter([
-            'scroll_id' => ArrayHelper::remove($options, 'scroll_id', null),
-        ]);
+        $body = array_filter(
+            [
+                'scroll_id' => ArrayHelper::remove($options, 'scroll_id'),
+            ],
+        );
+
         if (empty($body)) {
             $body = (object) [];
         }
@@ -707,14 +753,14 @@ class Command extends Component
     /**
      * @param string $index Index that the document belongs to.
      *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
-     *
      * @return mixed
      *
+     * @throws InvalidConfigException
+     *
+     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-stats.html
      */
-    public function getIndexStats($index = '_all')
+    public function getIndexStats(string $index = '_all'): mixed
     {
         return $this->db->get([$index, '_stats']);
     }
@@ -722,14 +768,14 @@ class Command extends Component
     /**
      * @param string $index Index that the document belongs to.
      *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
-     *
      * @return mixed
      *
+     * @throws InvalidConfigException
+     *
+     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-recovery.html
      */
-    public function getIndexRecoveryStats($index = '_all')
+    public function getIndexRecoveryStats(string $index = '_all'): mixed
     {
         return $this->db->get([$index, '_recovery']);
     }
@@ -739,14 +785,14 @@ class Command extends Component
     /**
      * @param string $index Index that the document belongs to.
      *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
-     *
      * @return mixed
      *
+     * @throws InvalidConfigException
+     *
+     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-clearcache.html
      */
-    public function clearIndexCache($index)
+    public function clearIndexCache(string $index): mixed
     {
         return $this->db->post([$index, '_cache', 'clear']);
     }
@@ -754,14 +800,14 @@ class Command extends Component
     /**
      * @param string $index Index that the document belongs to.
      *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
-     *
      * @return mixed
      *
+     * @throws InvalidConfigException
+     *
+     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-flush.html
      */
-    public function flushIndex($index = '_all')
+    public function flushIndex(string $index = '_all'): mixed
     {
         return $this->db->post([$index, '_flush']);
     }
@@ -769,44 +815,48 @@ class Command extends Component
     /**
      * @param string $index Index that the document belongs to.
      *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
-     *
      * @return mixed
      *
+     * @throws InvalidConfigException
+     *
+     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-refresh.html
      */
-    public function refreshIndex($index)
+    public function refreshIndex(string $index): mixed
     {
         return $this->db->post([$index, '_refresh']);
     }
 
     // TODO https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-optimize.html
-
     // TODO https://www.elastic.co/guide/en/elasticsearch/reference/0.90/indices-gateway-snapshot.html
 
     /**
      * @param string $index Index that the document belongs to.
      * @param string|null $type Type that the document belongs to.
-     * @param array|string $mapping
+     * @param array|string|null $mapping
      * @param array $options URL options
-     *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
      *
      * @return mixed
      *
+     * @throws InvalidConfigException
+     *
+     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-put-mapping.html
      */
-    public function setMapping($index, $type, $mapping, $options = [])
+    public function setMapping(string $index, string|null $type, array|string|null $mapping, array $options = []): mixed
     {
-        $body = $mapping !== null ? (is_string($mapping) ? $mapping : Json::encode($mapping)) : null;
+        if ($mapping !== null) {
+            $body = is_string($mapping) ? $mapping : Json::encode($mapping);
+        } else {
+            $body = null;
+        }
 
         if ($this->db->dslVersion >= 7) {
             $endpoint = [$index, '_mapping'];
         } else {
             $endpoint = [$index, '_mapping', $type];
         }
+
         return $this->db->put($endpoint, $options, $body);
     }
 
@@ -814,19 +864,21 @@ class Command extends Component
      * @param string $index Index that the document belongs to.
      * @param string|null $type Type that the document belongs to.
      *
-     * @throws Exception
-     * @throws \yii\base\InvalidConfigException
-     *
      * @return mixed
      *
+     * @throws InvalidConfigException
+     *
+     * @throws Exception
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-get-mapping.html
      */
-    public function getMapping($index = '_all', $type = null)
+    public function getMapping(string $index = '_all', string $type = null): mixed
     {
         $url = [$index, '_mapping'];
+
         if ($this->db->dslVersion < 7 && $type !== null) {
             $url[] = $type;
         }
+
         return $this->db->get($url);
     }
 
@@ -859,21 +911,18 @@ class Command extends Component
     //	}
 
     /**
-     * @param $name
-     * @param $pattern
-     * @param $settings
-     * @param $mappings
-     * @param int $order
-     *
+     * @throws InvalidConfigException
      * @throws Exception
-     * @throws \yii\base\InvalidConfigException
-     *
-     * @return mixed
      *
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-templates.html
      */
-    public function createTemplate($name, $pattern, $settings, $mappings, $order = 0)
-    {
+    public function createTemplate(
+        string $name,
+        string $pattern,
+        string $settings,
+        array|string|null $mappings,
+        int $order = 0
+    ): mixed {
         $body = Json::encode([
             'template' => $pattern,
             'order' => $order,
@@ -888,13 +937,13 @@ class Command extends Component
      * @param $name
      *
      * @throws Exception
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      *
      * @return mixed
      *
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-templates.html
      */
-    public function deleteTemplate($name)
+    public function deleteTemplate($name): mixed
     {
         return $this->db->delete(['_template', $name]);
     }
@@ -903,13 +952,13 @@ class Command extends Component
      * @param $name
      *
      * @throws Exception
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      *
      * @return mixed
      *
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-templates.html
      */
-    public function getTemplate($name)
+    public function getTemplate($name): mixed
     {
         return $this->db->get(['_template', $name]);
     }

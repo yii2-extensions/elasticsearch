@@ -11,8 +11,15 @@ declare(strict_types=1);
 
 namespace yii\elasticsearch;
 
+use ReflectionClass;
+use stdClass;
+use yii\base\Exception;
 use yii\base\InvalidConfigException;
 use yii\test\BaseActiveFixture;
+
+use function dirname;
+use function is_file;
+use function print_r;
 
 /**
  * ActiveFixture represents a fixture for testing backed up by an [[modelClass|ActiveRecord class]] or an elastic search index.
@@ -38,39 +45,47 @@ class ActiveFixture extends BaseActiveFixture
      */
     public $db = 'elasticsearch';
     /**
-     * @var string the name of the index that this fixture is about. If this property is not set,
-     * the name will be determined via [[modelClass]].
+     * @var string|null the name of the index that this fixture is about. If this property is not set, the name will be
+     * determined via [[modelClass]].
      *
      * @see modelClass
      */
-    public $index;
+    public string|null $index = null;
     /**
-     * @var string the name of the type that this fixture is about. If this property is not set,
-     * the name will be determined via [[modelClass]].
+     * @var string|null the name of the type that this fixture is about. If this property is not set, the name will be
+     * determined via [[modelClass]].
      *
      * @see modelClass
      */
-    public $type;
+    public string|null $type = null;
     /**
-     * @var bool|string the file path or path alias of the data file that contains the fixture data
-     * to be returned by [[getData()]]. If this is not set, it will default to `FixturePath/data/Index/Type.php`,
-     * where `FixturePath` stands for the directory containing this fixture class, `Index` stands for the elasticsearch [[index]] name
-     * and `Type` stands for the [[type]] associated with this fixture.
+     * @var bool|string the file path or path alias of the data file that contains the fixture data to be returned by
+     * [[getData()]].
+     *
+     * If this is not set, it will default to `FixturePath/data/Index/Type.php`, where `FixturePath` stands for the
+     * directory containing this fixture class, `Index` stands for the elasticsearch [[index]] name and `Type` stands
+     * for the [[type]] associated with this fixture.
+     *
      * You can set this property to be false to prevent loading any data.
      */
     public $dataFile;
 
     /**
      * @inheritdoc
+     *
+     * @throws InvalidConfigException
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
-        if (!isset($this->modelClass) && (!isset($this->index) || !isset($this->type))) {
+
+        if (!isset($this->modelClass) && (!isset($this->index, $this->type))) {
             throw new InvalidConfigException('Either "modelClass" or "index" and "type" must be set.');
         }
+
         /* @var $modelClass ActiveRecord */
         $modelClass = $this->modelClass;
+
         if ($this->index === null) {
             $this->index = $modelClass::index();
         }
@@ -87,8 +102,10 @@ class ActiveFixture extends BaseActiveFixture
      *
      * If you override this method, you should consider calling the parent implementation
      * so that the data returned by [[getData()]] can be populated into the index.
+     *
+     * @throws Exception
      */
-    public function load()
+    public function load(): void
     {
         $this->resetIndex();
         $this->data = [];
@@ -98,7 +115,9 @@ class ActiveFixture extends BaseActiveFixture
         foreach ($this->getData() as $alias => $row) {
             $options = [];
             $id = $row[$idField] ?? null;
+
             unset($row[$idField]);
+
             if (isset($row['_parent'])) {
                 $options['parent'] = $row['_parent'];
                 unset($row['_parent']);
@@ -107,13 +126,17 @@ class ActiveFixture extends BaseActiveFixture
             try {
                 $response = $this->db->createCommand()->insert($this->index, $this->type, $row, $id, $options);
             } catch(\yii\db\Exception $e) {
-                throw new \yii\base\Exception("Failed to insert fixture data \"$alias\": " . $e->getMessage() . "\n" . print_r($e->errorInfo, true), $e->getCode(), $e);
+                throw new Exception("Failed to insert fixture data \"$alias\": " .
+                    $e->getMessage() . "\n" . print_r($e->errorInfo, true), $e->getCode(), $e);
             }
+
             if ($id === null) {
                 $row[$idField] = $response['_id'];
             }
+
             $this->data[$alias] = $row;
         }
+
         // ensure all data is flushed and immediately available in the test
         $this->db->createCommand()->refreshIndex($this->index);
     }
@@ -127,27 +150,36 @@ class ActiveFixture extends BaseActiveFixture
      * If the data file does not exist, an empty array will be returned.
      *
      * @return array the data rows to be inserted into the database index.
+     *
+     * @throws InvalidConfigException
      */
-    protected function getData()
+    protected function getData(): array
     {
         if ($this->dataFile === null) {
-            $class = new \ReflectionClass($this);
-            $dataFile = dirname($class->getFileName()) . "/data/{$this->index}/{$this->type}.php";
+            $class = new ReflectionClass($this);
+            $dataFile = dirname($class->getFileName()) . "/data/$this->index/$this->type.php";
+
             return is_file($dataFile) ? require($dataFile) : [];
         }
+
         return parent::getData();
     }
 
     /**
      * Removes all existing data from the specified index and type.
      * This method is called before populating fixture data into the index associated with this fixture.
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
      */
-    protected function resetIndex()
+    protected function resetIndex(): void
     {
-        $this->db->createCommand([
-            'index' => $this->index,
-            'type' => $this->type,
-            'queryParts' => ['query' => ['match_all' => new \stdClass()]],
-        ])->deleteByQuery();
+        $this->db->createCommand(
+            [
+                'index' => $this->index,
+                'type' => $this->type,
+                'queryParts' => ['query' => ['match_all' => new stdClass()]],
+            ],
+        )->deleteByQuery();
     }
 }

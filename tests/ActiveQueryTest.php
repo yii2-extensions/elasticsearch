@@ -21,10 +21,10 @@ class ActiveQueryTest extends TestCase
         if ($command->indexExists(Item::index())) {
             $command->deleteIndex(Item::index());
         }
+
         Item::setUpMapping($command);
 
         $command->insert(Item::index(), Item::type(), ['name' => 'item1', 'category_id' => 17], 1);
-
         $command->refreshIndex(Item::index());
     }
 
@@ -37,10 +37,13 @@ class ActiveQueryTest extends TestCase
 
         $result = $activeQuery->column('category_id', $this->getConnection());
         $this->assertEquals([17], $result);
+
         $result = $activeQuery->column('_id', $this->getConnection());
         $this->assertEquals([1], $result);
+
         $result = $activeQuery->column('noname', $this->getConnection());
         $this->assertEquals([null], $result);
+
         $result = $activeQuery->scalar('name', $this->getConnection());
         $this->assertEquals('item1', $result);
     }

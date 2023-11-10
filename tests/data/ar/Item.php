@@ -25,13 +25,17 @@ class Item extends ActiveRecord
      *
      * @param Command $command
      */
-    public static function setUpMapping($command): void
+    public static function setUpMapping(Command $command): void
     {
-        $command->setMapping(static::index(), static::type(), [
-            'properties' => [
-                'name' => ['type' => 'keyword', 'store' => true],
-                'category_id' => ['type' => 'integer'],
+        $command->setMapping(
+            static::index(),
+            static::type(),
+            [
+                'properties' => [
+                    'name' => ['type' => 'keyword', 'store' => true],
+                    'category_id' => ['type' => 'integer'],
+                ],
             ],
-        ]);
+        );
     }
 }

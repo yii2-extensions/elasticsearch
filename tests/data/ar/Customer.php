@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace yiiunit\extensions\elasticsearch\data\ar;
 
+use yii\db\ActiveQueryInterface;
 use yii\elasticsearch\Command;
 use yiiunit\extensions\elasticsearch\ActiveRecordTest;
 
@@ -27,21 +28,22 @@ class Customer extends ActiveRecord
         return ['name', 'email', 'address', 'status', 'is_active'];
     }
 
-    public function getOrders()
+    public function getOrders(): ActiveQueryInterface
     {
-        return $this->hasMany(Order::className(), ['customer_id' => '_id'])->orderBy('created_at');
+        return $this->hasMany(Order::class, ['customer_id' => '_id'])->orderBy('created_at');
     }
 
-    public function getExpensiveOrders()
+    public function getExpensiveOrders(): ActiveQueryInterface
     {
-        return $this->hasMany(Order::className(), ['customer_id' => '_id'])
+        return $this
+            ->hasMany(Order::class, ['customer_id' => '_id'])
             ->where([ 'gte', 'total', 50 ])
             ->orderBy('_id');
     }
 
-    public function getOrdersWithItems()
+    public function getOrdersWithItems(): ActiveQueryInterface
     {
-        return $this->hasMany(Order::className(), ['customer_id' => '_id'])->with('orderItems');
+        return $this->hasMany(Order::class, ['customer_id' => '_id'])->with('orderItems');
     }
 
     public function afterSave($insert, $changedAttributes): void
@@ -55,19 +57,22 @@ class Customer extends ActiveRecord
      * sets up the index for this record
      *
      * @param Command $command
-     * @param bool $statusIsBoolean
      */
-    public static function setUpMapping($command): void
+    public static function setUpMapping(Command $command): void
     {
-        $command->setMapping(static::index(), static::type(), [
-            'properties' => [
-                'name' => ['type' => 'keyword',  'store' => true],
-                'email' => ['type' => 'keyword', 'store' => true],
-                'address' => ['type' => 'text'],
-                'status' => ['type' => 'integer', 'store' => true],
-                'is_active' => ['type' => 'boolean', 'store' => true],
+        $command->setMapping(
+            static::index(),
+            static::type(),
+            [
+                'properties' => [
+                    'name' => ['type' => 'keyword',  'store' => true],
+                    'email' => ['type' => 'keyword', 'store' => true],
+                    'address' => ['type' => 'text'],
+                    'status' => ['type' => 'integer', 'store' => true],
+                    'is_active' => ['type' => 'boolean', 'store' => true],
+                ],
             ],
-        ]);
+        );
     }
 
     /**

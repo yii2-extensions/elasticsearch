@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace yii\elasticsearch;
 
+use yii\base\InvalidConfigException;
 use yii\db\ActiveQueryInterface;
 use yii\db\ActiveQueryTrait;
 use yii\db\ActiveRelationTrait;
@@ -50,7 +51,7 @@ use yii\db\ActiveRelationTrait;
  * $customers = Customer::find()->with('orders')->asArray()->all();
  * ```
  * > NOTE: Elasticsearch limits the number of records returned to 10 records by default.
- * > If you expect to get more records you should specify limit explicitly.
+ * > If you expect to get more records, you should specify the limit explicitly.
  *
  * Relational query
  * ----------------
@@ -65,13 +66,13 @@ use yii\db\ActiveRelationTrait;
  * of different tables; and the multiplicity of the relation is indicated by [[multiple]].
  *
  * If a relation involves a junction table, it may be specified by [[via()]].
- * This methods may only be called in a relational context. Same is true for [[inverseOf()]], which
+ * This methods may only be called in a relational context. The same is true for [[inverseOf()]], which
  * marks a relation as inverse of another relation.
  *
  * > Note: Elasticsearch limits the number of records returned by any query to 10 records by default.
- * > If you expect to get more records you should specify limit explicitly in relation definition.
+ * > If you expect to get more records, you should specify limit explicitly in relation definition.
  * > This is also important for relations that use [[via()]] so that if via records are limited to 10
- * > the relations records can also not be more than 10.
+ * > the relation records can also not be more than 10.
  *
  * > Note: Currently [[with]] is not supported in combination with [[asArray]].
  *
@@ -93,7 +94,7 @@ class ActiveQuery extends Query implements ActiveQueryInterface
      * @param string $modelClass the model class associated with this query
      * @param array $config configurations to be applied to the newly created query object
      */
-    public function __construct($modelClass, $config = [])
+    public function __construct(string $modelClass, array $config = [])
     {
         $this->modelClass = $modelClass;
         parent::__construct($config);
@@ -105,21 +106,24 @@ class ActiveQuery extends Query implements ActiveQueryInterface
      * an [[EVENT_INIT]] event. If you override this method, make sure you call the parent implementation at the end
      * to ensure triggering of the event.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
+
         $this->trigger(self::EVENT_INIT);
     }
 
     /**
      * Creates a DB command that can be used to execute this query.
      *
-     * @param Connection $db the DB connection used to create the DB command.
+     * @param Connection|null $db the DB connection used to create the DB command.
      * If null, the DB connection returned by [[modelClass]] will be used.
      *
      * @return Command the created DB command instance.
+     *
+     * @throws Exception
      */
-    public function createCommand($db = null)
+    public function createCommand(Connection $db = null): Command
     {
         if ($this->primaryModel !== null) {
             // lazy loading
@@ -160,14 +164,16 @@ class ActiveQuery extends Query implements ActiveQueryInterface
     }
 
     /**
-     * Executes query and returns all results as an array.
+     * Executes a query and returns all results as an array.
      *
-     * @param Connection $db the DB connection used to create the DB command.
+     * @param Connection|null $db the DB connection used to create the DB command.
      * If null, the DB connection returned by [[modelClass]] will be used.
      *
      * @return array the query results. If the query results in nothing, an empty array will be returned.
+     *
+     * @throws Exception
      */
-    public function all($db = null)
+    public function all($db = null): array
     {
         return parent::all($db);
     }
@@ -179,9 +185,10 @@ class ActiveQuery extends Query implements ActiveQueryInterface
      *
      * @return ActiveRecord[]|array
      */
-    private function createModels($rows)
+    private function createModels($rows): array
     {
         $models = [];
+
         if ($this->asArray) {
             if ($this->indexBy === null) {
                 return $rows;
@@ -197,6 +204,7 @@ class ActiveQuery extends Query implements ActiveQueryInterface
         } else {
             /* @var $class ActiveRecord */
             $class = $this->modelClass;
+
             if ($this->indexBy === null) {
                 foreach ($rows as $row) {
                     $model = $class::instantiate($row);
@@ -225,7 +233,7 @@ class ActiveQuery extends Query implements ActiveQueryInterface
     /**
      * @inheritdoc
      */
-    public function populate($rows)
+    public function populate(array $rows): array
     {
         if (empty($rows)) {
             return [];
@@ -245,16 +253,18 @@ class ActiveQuery extends Query implements ActiveQueryInterface
     }
 
     /**
-     * Executes query and returns a single row of result.
+     * Executes query and returns a single row of a result.
      *
-     * @param Connection $db the DB connection used to create the DB command.
+     * @param Connection|null $db the DB connection used to create the DB command.
      * If null, the DB connection returned by [[modelClass]] will be used.
      *
-     * @return ActiveRecord|array|null a single row of query result. Depending on the setting of [[asArray]],
+     * @return ActiveRecord|array|null a single row of a query result. Depending on the setting of [[asArray]],
      * the query result may be either an array or an ActiveRecord object. Null will be returned
      * if the query results in nothing.
+     *
+     * @throws Exception
      */
-    public function one($db = null)
+    public function one($db = null): ActiveRecord|array|null
     {
         if (($result = parent::one($db)) === false) {
             return null;
@@ -292,8 +302,11 @@ class ActiveQuery extends Query implements ActiveQueryInterface
 
     /**
      * @inheritdoc
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
      */
-    public function search($db = null, $options = [])
+    public function search(Connection $db = null, array $options = [])
     {
         if ($this->emulateExecution) {
             return [
@@ -332,8 +345,11 @@ class ActiveQuery extends Query implements ActiveQueryInterface
 
     /**
      * @inheritdoc
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
      */
-    public function column($field, $db = null)
+    public function column(string $field, Connection $db = null): array
     {
         if ($field === '_id') {
             $command = $this->createCommand($db);

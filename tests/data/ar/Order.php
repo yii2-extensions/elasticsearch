@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace yiiunit\extensions\elasticsearch\data\ar;
 
+use yii\db\ActiveQueryInterface;
 use yii\elasticsearch\ActiveQuery;
 use yii\elasticsearch\Command;
 
@@ -26,71 +27,90 @@ class Order extends ActiveRecord
         return ['customer_id', 'created_at', 'total', 'itemsArray'];
     }
 
-    public function getCustomer()
+    public function getCustomer(): ActiveQueryInterface
     {
-        return $this->hasOne(Customer::className(), ['_id' => 'customer_id']);
+        return $this->hasOne(Customer::class, ['_id' => 'customer_id']);
     }
 
-    public function getOrderItems()
+    public function getOrderItems(): ActiveQueryInterface
     {
-        return $this->hasMany(OrderItem::className(), ['order_id' => '_id']);
+        return $this->hasMany(OrderItem::class, ['order_id' => '_id']);
     }
 
     /**
      * A relation to Item defined via array valued attribute
      */
-    public function getItemsByArrayValue()
+    public function getItemsByArrayValue(): ActiveQueryInterface
     {
-        return $this->hasMany(Item::className(), ['_id' => 'itemsArray'])->indexBy('_id');
+        return $this->hasMany(Item::class, ['_id' => 'itemsArray'])->indexBy('_id');
     }
 
-    public function getItems()
+    public function getItems(): ActiveQueryInterface
     {
-        return $this->hasMany(Item::className(), ['_id' => 'item_id'])
-            ->via('orderItems')->orderBy('_id');
+        return $this->hasMany(Item::class, ['_id' => 'item_id'])->via('orderItems')->orderBy('_id');
     }
 
-    public function getExpensiveItemsUsingViaWithCallable()
+    public function getExpensiveItemsUsingViaWithCallable(): ActiveQueryInterface
     {
-        return $this->hasMany(Item::className(), ['_id' => 'item_id'])
-            ->via('orderItems', function (ActiveQuery $q): void {
-                $q->where(['>=', 'subtotal', 10]);
-            });
+        return $this
+            ->hasMany(Item::class, ['_id' => 'item_id'])
+            ->via(
+                'orderItems',
+                static function (ActiveQuery $q): void {
+                    $q->where(['>=', 'subtotal', 10]);
+                },
+            );
     }
 
-    public function getCheapItemsUsingViaWithCallable()
+    public function getCheapItemsUsingViaWithCallable(): ActiveQueryInterface
     {
-        return $this->hasMany(Item::className(), ['_id' => 'item_id'])
-            ->via('orderItems', function (ActiveQuery $q): void {
-                $q->where(['<', 'subtotal', 10]);
-            });
+        return $this
+            ->hasMany(Item::class, ['_id' => 'item_id'])
+            ->via(
+                'orderItems',
+                static function (ActiveQuery $q): void {
+                    $q->where(['<', 'subtotal', 10]);
+                },
+            );
     }
 
-    public function getItemsIndexed()
+    public function getItemsIndexed(): ActiveQueryInterface
     {
-        return $this->hasMany(Item::className(), ['_id' => 'item_id'])
+        return $this
+            ->hasMany(Item::class, ['_id' => 'item_id'])
             ->via('orderItems')->indexBy('_id');
     }
 
-    public function getItemsInOrder1()
+    public function getItemsInOrder1(): ActiveQueryInterface
     {
-        return $this->hasMany(Item::className(), ['_id' => 'item_id'])
-            ->via('orderItems', function ($q): void {
-                $q->orderBy(['subtotal' => SORT_ASC]);
-            })->orderBy('name');
+        return $this
+            ->hasMany(Item::class, ['_id' => 'item_id'])
+            ->via(
+                'orderItems',
+                static function ($q): void {
+                    $q->orderBy(['subtotal' => SORT_ASC]);
+                }
+            )
+            ->orderBy('name');
     }
 
-    public function getItemsInOrder2()
+    public function getItemsInOrder2(): ActiveQueryInterface
     {
-        return $this->hasMany(Item::className(), ['_id' => 'item_id'])
-            ->via('orderItems', function ($q): void {
-                $q->orderBy(['subtotal' => SORT_DESC]);
-            })->orderBy('name');
+        return $this
+            ->hasMany(Item::class, ['_id' => 'item_id'])
+            ->via(
+                'orderItems',
+                static function ($q): void {
+                    $q->orderBy(['subtotal' => SORT_DESC]);
+                }
+            )
+            ->orderBy('name');
     }
 
-    public function getBooks()
+    public function getBooks(): ActiveQueryInterface
     {
-        return $this->hasMany(Item::className(), ['_id' => 'item_id'])
+        return $this
+            ->hasMany(Item::class, ['_id' => 'item_id'])
             ->via('orderItems')
             ->where(['category_id' => 1]);
     }
@@ -100,13 +120,16 @@ class Order extends ActiveRecord
      *
      * @param Command $command
      */
-    public static function setUpMapping($command): void
+    public static function setUpMapping(Command $command): void
     {
-        $command->setMapping(static::index(), static::type(), [
-            'properties' => [
-                'customer_id' => ['type' => 'integer'],
-                'total' => ['type' => 'integer'],
+        $command->setMapping(
+            static::index(),
+            static::type(), [
+                'properties' => [
+                    'customer_id' => ['type' => 'integer'],
+                    'total' => ['type' => 'integer'],
+                ],
             ],
-        ]);
+        );
     }
 }

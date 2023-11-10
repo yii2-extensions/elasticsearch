@@ -27,22 +27,22 @@ class ActiveRecordTest extends TestCase
 
     public function getCustomerClass()
     {
-        return Customer::className();
+        return Customer::class;
     }
 
     public function getItemClass()
     {
-        return Item::className();
+        return Item::class;
     }
 
     public function getOrderClass()
     {
-        return Order::className();
+        return Order::class;
     }
 
     public function getOrderItemClass()
     {
-        return OrderItem::className();
+        return OrderItem::class;
     }
 
     protected function setUp(): void
@@ -52,56 +52,132 @@ class ActiveRecordTest extends TestCase
         /* @var $db Connection */
         $db = ActiveRecord::$db = $this->getConnection();
 
-        Record::initIndex(Customer::className(), $db);
-        Record::initIndex(Item::className(), $db);
-        Record::initIndex(Order::className(), $db);
-        Record::initIndex(OrderItem::className(), $db);
-        Record::initIndex(Animal::className(), $db);
+        Record::initIndex(Customer::class, $db);
+        Record::initIndex(Item::class, $db);
+        Record::initIndex(Order::class, $db);
+        Record::initIndex(OrderItem::class, $db);
+        Record::initIndex(Animal::class, $db);
 
-        Record::insertMany(Customer::className(), [
-            ['_id' => 1, 'email' => 'user1@example.com', 'name' => 'user1', 'address' => 'address1', 'status' => 1, 'is_active' => true],
-            ['_id' => 2, 'email' => 'user2@example.com', 'name' => 'user2', 'address' => 'address2', 'status' => 1, 'is_active' => true],
-            ['_id' => 3, 'email' => 'user3@example.com', 'name' => 'user3', 'address' => 'address3', 'status' => 2, 'is_active' => false],
-        ]);
-        Record::refreshIndex(Customer::className(), $db);
+        Record::insertMany(
+            Customer::class,
+            [
+                [
+                    '_id' => 1,
+                    'email' => 'user1@example.com',
+                    'name' => 'user1',
+                    'address' => 'address1',
+                    'status' => 1,
+                    'is_active' => true,
+                ],
+                [
+                    '_id' => 2,
+                    'email' => 'user2@example.com',
+                    'name' => 'user2',
+                    'address' => 'address2',
+                    'status' => 1,
+                    'is_active' => true
+                ],
+                [
+                    '_id' => 3,
+                    'email' => 'user3@example.com',
+                    'name' => 'user3',
+                    'address' => 'address3',
+                    'status' => 2,
+                    'is_active' => false,
+                ],
+            ],
+        );
 
-        Record::insertMany(Item::className(), [
-            ['_id' => 1, 'name' => 'Agile Web Application Development with Yii1.1 and PHP5', 'category_id' => 1],
-            ['_id' => 2, 'name' => 'Yii 1.1 Application Development Cookbook', 'category_id' => 1],
-            ['_id' => 3, 'name' => 'Ice Age', 'category_id' => 2],
-            ['_id' => 4, 'name' => 'Toy Story', 'category_id' => 2],
-            ['_id' => 5, 'name' => 'Cars', 'category_id' => 2],
-        ]);
-        Record::refreshIndex(Item::className(), $db);
+        Record::refreshIndex(Customer::class, $db);
 
-        Record::insertMany(Order::className(), [
-            ['_id' => 1, 'customer_id' => 1, 'created_at' => 1_325_282_384, 'total' => 110.0, 'itemsArray' => [1, 2]],
-            ['_id' => 2, 'customer_id' => 2, 'created_at' => 1_325_334_482, 'total' => 33.0, 'itemsArray' => [4, 5, 3]],
-            ['_id' => 3, 'customer_id' => 2, 'created_at' => 1_325_502_201, 'total' => 40.0, 'itemsArray' => [2]],
-        ]);
-        Record::refreshIndex(Order::className(), $db);
+        Record::insertMany(
+            Item::class,
+            [
+                [
+                    '_id' => 1,
+                    'name' => 'Agile Web Application Development with Yii1.1 and PHP5',
+                    'category_id' => 1,
+                ],
+                [
+                    '_id' => 2,
+                    'name' => 'Yii 1.1 Application Development Cookbook',
+                    'category_id' => 1,
+                ],
+                [
+                    '_id' => 3,
+                    'name' => 'Ice Age',
+                    'category_id' => 2,
+                ],
+                [
+                    '_id' => 4,
+                    'name' => 'Toy Story',
+                    'category_id' => 2,
+                ],
+                [
+                    '_id' => 5,
+                    'name' => 'Cars',
+                    'category_id' => 2,
+                ],
+            ],
+        );
 
-        Record::insertMany(OrderItem::className(), [
-            ['order_id' => 1, 'item_id' => 1, 'quantity' => 1, 'subtotal' => 30.0],
-            ['order_id' => 1, 'item_id' => 2, 'quantity' => 2, 'subtotal' => 40.0],
-            ['order_id' => 2, 'item_id' => 4, 'quantity' => 1, 'subtotal' => 10.0],
-            ['order_id' => 2, 'item_id' => 5, 'quantity' => 1, 'subtotal' => 15.0],
-            ['order_id' => 2, 'item_id' => 3, 'quantity' => 1, 'subtotal' => 8.0],
-            ['order_id' => 3, 'item_id' => 2, 'quantity' => 1, 'subtotal' => 40.0],
-        ]);
-        Record::refreshIndex(OrderItem::className(), $db);
+        Record::refreshIndex(Item::class, $db);
 
-        Record::insert(Cat::className(), []);
-        Record::insert(Dog::className(), []);
-        Record::refreshIndex(Animal::className(), $db);
+        Record::insertMany(
+            Order::class,
+            [
+                [
+                    '_id' => 1,
+                    'customer_id' => 1,
+                    'created_at' => 1_325_282_384,
+                    'total' => 110.0,
+                    'itemsArray' => [1, 2],
+                ],
+                [
+                    '_id' => 2,
+                    'customer_id' => 2,
+                    'created_at' => 1_325_334_482,
+                    'total' => 33.0,
+                    'itemsArray' => [4, 5, 3],
+                ],
+                [
+                    '_id' => 3,
+                    'customer_id' => 2,
+                    'created_at' => 1_325_502_201,
+                    'total' => 40.0,
+                    'itemsArray' => [2],
+                ],
+            ],
+        );
+
+        Record::refreshIndex(Order::class, $db);
+
+        Record::insertMany(
+            OrderItem::class,
+            [
+                ['order_id' => 1, 'item_id' => 1, 'quantity' => 1, 'subtotal' => 30.0],
+                ['order_id' => 1, 'item_id' => 2, 'quantity' => 2, 'subtotal' => 40.0],
+                ['order_id' => 2, 'item_id' => 4, 'quantity' => 1, 'subtotal' => 10.0],
+                ['order_id' => 2, 'item_id' => 5, 'quantity' => 1, 'subtotal' => 15.0],
+                ['order_id' => 2, 'item_id' => 3, 'quantity' => 1, 'subtotal' => 8.0],
+                ['order_id' => 3, 'item_id' => 2, 'quantity' => 1, 'subtotal' => 40.0],
+            ],
+        );
+
+        Record::refreshIndex(OrderItem::class, $db);
+        Record::insert(Cat::class, []);
+        Record::insert(Dog::class, []);
+        Record::refreshIndex(Animal::class, $db);
     }
 
     public function testSaveNoChanges(): void
     {
         // this should not fail with exception
         $customer = new Customer();
+
         // insert
         $this->assertTrue($customer->save(false));
+
         // update
         $this->assertTrue($customer->save(false));
     }
@@ -110,20 +186,24 @@ class ActiveRecordTest extends TestCase
     {
         // asArray
         $customer = Customer::find()->where(['_id' => 2])->asArray()->one();
-        $this->assertEquals([
-            'email' => 'user2@example.com',
-            'name' => 'user2',
-            'address' => 'address2',
-            'status' => 1,
-            'is_active' => true,
-        ], $customer['_source']);
 
+        $this->assertEquals(
+            [
+                'email' => 'user2@example.com',
+                'name' => 'user2',
+                'address' => 'address2',
+                'status' => 1,
+                'is_active' => true,
+            ],
+            $customer['_source'],
+        );
         $this->assertEquals(2, $customer['_id']);
     }
 
     public function testSearch(): void
     {
         $customers = Customer::find()->search()['hits'];
+
         $total = is_array($customers['total']) ? $customers['total']['value'] : $customers['total'];
         $this->assertEquals(3, $total);
         $this->assertTrue($customers['hits'][0] instanceof Customer);
@@ -140,6 +220,7 @@ class ActiveRecordTest extends TestCase
         $result = Customer::find()->asArray()->search()['hits'];
         $total = is_array($result['total']) ? $result['total']['value'] : $result['total'];
         $this->assertEquals(3, $total);
+
         $customers = $result['hits'];
         $this->assertCount(3, $customers);
         $this->assertArrayHasKey('_id', $customers[0]);
@@ -168,25 +249,30 @@ class ActiveRecordTest extends TestCase
 
     public function testSuggestion(): void
     {
-        $result = Customer::find()->addSuggester('customer_name', [
-            'text' => 'user',
-            'term' => [
-                'field' => 'name',
-            ],
-        ])->search();
+        $result = Customer::find()
+            ->addSuggester(
+                'customer_name',
+                [
+                    'text' => 'user',
+                    'term' => [
+                        'field' => 'name',
+                    ],
+                ],
+            )
+            ->search();
 
         $this->assertCount(3, $result['suggest']['customer_name'][0]['options']);
     }
 
     public function testGetDb(): void
     {
-        $this->mockApplication(['components' => ['elasticsearch' => Connection::className()]]);
-        $this->assertInstanceOf(Connection::className(), ActiveRecord::getDb());
+        $this->mockApplication(['components' => ['elasticsearch' => Connection::class]]);
+        $this->assertInstanceOf(Connection::class, ActiveRecord::getDb());
     }
 
     public function testGet(): void
     {
-        $this->assertInstanceOf(Customer::className(), Customer::get(1));
+        $this->assertInstanceOf(Customer::class, Customer::get(1));
         $this->assertNull(Customer::get(5));
     }
 
@@ -196,15 +282,15 @@ class ActiveRecordTest extends TestCase
 
         $records = Customer::mget([1]);
         $this->assertCount(1, $records);
-        $this->assertInstanceOf(Customer::className(), reset($records));
+        $this->assertInstanceOf(Customer::class, reset($records));
 
         $records = Customer::mget([5]);
         $this->assertCount(0, $records);
 
         $records = Customer::mget([1, 3, 5]);
         $this->assertCount(2, $records);
-        $this->assertInstanceOf(Customer::className(), $records[0]);
-        $this->assertInstanceOf(Customer::className(), $records[1]);
+        $this->assertInstanceOf(Customer::class, $records[0]);
+        $this->assertInstanceOf(Customer::class, $records[1]);
     }
 
     public function testFindLazy(): void
@@ -222,7 +308,9 @@ class ActiveRecordTest extends TestCase
     public function testFindEagerViaRelation(): void
     {
         $orders = Order::find()->with('items')->orderBy('created_at')->all();
+
         $this->assertCount(3, $orders);
+
         $order = $orders[0];
         $this->assertEquals(1, $order->_id);
         $this->assertTrue($order->isRelationPopulated('items'));
@@ -246,7 +334,8 @@ class ActiveRecordTest extends TestCase
         $this->assertTrue($customer->isNewRecord);
 
         $customer->save();
-        Record::refreshIndex($customer::className(), $customer->db);
+
+        Record::refreshIndex($customer::class, $customer->db);
 
         $this->assertNotNull($customer->_id);
         $this->assertNotNull($customer->oldPrimaryKey);
@@ -289,15 +378,20 @@ class ActiveRecordTest extends TestCase
     {
         $orderItems = OrderItem::find()
             ->source('quantity', 'subtotal')
-            ->scriptFields([
-                'total' => [
-                    'script' => [
-                        'lang' => 'painless',
-                        'inline' => "doc['quantity'].value * doc['subtotal'].value",
+            ->scriptFields(
+                [
+                    'total' => [
+                        'script' => [
+                            'lang' => 'painless',
+                            'inline' => "doc['quantity'].value * doc['subtotal'].value",
+                        ],
                     ],
                 ],
-            ])->all();
+            )
+            ->all();
+
         $this->assertNotEmpty($orderItems);
+
         foreach ($orderItems as $item) {
             $this->assertEquals($item->subtotal * $item->quantity, $item->total);
         }
@@ -307,8 +401,8 @@ class ActiveRecordTest extends TestCase
     {
         /* @var $this TestCase|ActiveRecordTestTrait */
         // indexBy + asArray
-        $customers = Customer::find()->asArray()
-            ->storedFields(['name'])->all();
+        $customers = Customer::find()->asArray()->storedFields(['name'])->all();
+
         $this->assertCount(3, $customers);
         $this->assertArrayHasKey('name', $customers[0]['fields']);
         $this->assertArrayNotHasKey('email', $customers[0]['fields']);
@@ -329,6 +423,7 @@ class ActiveRecordTest extends TestCase
         /* @var $this TestCase|ActiveRecordTestTrait */
         // indexBy + asArray
         $customers = Customer::find()->asArray()->source(['name'])->all();
+
         $this->assertCount(3, $customers);
         $this->assertArrayHasKey('name', $customers[0]['_source']);
         $this->assertArrayNotHasKey('email', $customers[0]['_source']);
@@ -347,9 +442,11 @@ class ActiveRecordTest extends TestCase
     public function testFindIndexBySource(): void
     {
         $customerClass = $this->getCustomerClass();
+
         /* @var $this TestCase|ActiveRecordTestTrait */
         // indexBy + asArray
         $customers = Customer::find()->indexBy('name')->source('name')->all();
+
         $this->assertCount(3, $customers);
         $this->assertTrue($customers['user1'] instanceof $customerClass);
         $this->assertTrue($customers['user2'] instanceof $customerClass);
@@ -368,7 +465,11 @@ class ActiveRecordTest extends TestCase
         $this->assertNull($customers['user3']->status);
 
         // indexBy callable + asArray
-        $customers = Customer::find()->indexBy(fn($customer) => $customer->_id . '-' . $customer->name)->storedFields('name')->all();
+        $customers = Customer::find()
+            ->indexBy(fn($customer) => $customer->_id . '-' . $customer->name)
+            ->storedFields('name')
+            ->all();
+
         $this->assertCount(3, $customers);
         $this->assertTrue($customers['1-user1'] instanceof $customerClass);
         $this->assertTrue($customers['2-user2'] instanceof $customerClass);
@@ -392,6 +493,7 @@ class ActiveRecordTest extends TestCase
         /* @var $this TestCase|ActiveRecordTestTrait */
         // indexBy + asArray
         $customers = Customer::find()->indexBy('name')->asArray()->storedFields('name')->all();
+
         $this->assertCount(3, $customers);
         $this->assertArrayHasKey('name', $customers['user1']['fields']);
         $this->assertArrayNotHasKey('email', $customers['user1']['fields']);
@@ -407,7 +509,12 @@ class ActiveRecordTest extends TestCase
         $this->assertArrayNotHasKey('status', $customers['user3']['fields']);
 
         // indexBy callable + asArray
-        $customers = Customer::find()->indexBy(fn($customer) => $customer['_id'] . '-' . reset($customer['fields']['name']))->asArray()->storedFields('name')->all();
+        $customers = Customer::find()
+            ->indexBy(fn($customer) => $customer['_id'] . '-' . reset($customer['fields']['name']))
+            ->asArray()
+            ->storedFields('name')
+            ->all();
+
         $this->assertCount(3, $customers);
         $this->assertArrayHasKey('name', $customers['1-user1']['fields']);
         $this->assertArrayNotHasKey('email', $customers['1-user1']['fields']);
@@ -431,6 +538,7 @@ class ActiveRecordTest extends TestCase
         /* @var $this TestCase|ActiveRecordTestTrait */
         // indexBy + asArray
         $customers = $customerClass::find()->asArray()->indexBy('name')->all();
+
         $this->assertCount(3, $customers);
         $this->assertArrayHasKey('name', $customers['user1']['_source']);
         $this->assertArrayHasKey('email', $customers['user1']['_source']);
@@ -446,7 +554,11 @@ class ActiveRecordTest extends TestCase
         $this->assertArrayHasKey('status', $customers['user3']['_source']);
 
         // indexBy callable + asArray
-        $customers = $customerClass::find()->indexBy(fn($customer) => $customer['_id'] . '-' . $customer['_source']['name'])->asArray()->all();
+        $customers = $customerClass::find()
+            ->indexBy(fn($customer) => $customer['_id'] . '-' . $customer['_source']['name'])
+            ->asArray()
+            ->all();
+
         $this->assertCount(3, $customers);
         $this->assertArrayHasKey('name', $customers['1-user1']['_source']);
         $this->assertArrayHasKey('email', $customers['1-user1']['_source']);
@@ -468,26 +580,34 @@ class ActiveRecordTest extends TestCase
         $customerClass = $this->getCustomerClass();
 
         $afterFindCalls = [];
-        Event::on(BaseActiveRecord::className(), BaseActiveRecord::EVENT_AFTER_FIND, function ($event) use (&$afterFindCalls): void {
-            /* @var $ar BaseActiveRecord */
-            $ar = $event->sender;
-            $afterFindCalls[] = [$ar::class, $ar->getIsNewRecord(), $ar->getPrimaryKey(), $ar->isRelationPopulated('orders')];
-        });
+        Event::on(
+            BaseActiveRecord::class,
+            BaseActiveRecord::EVENT_AFTER_FIND,
+            static function ($event) use (&$afterFindCalls): void {
+                /* @var $ar BaseActiveRecord */
+                $ar = $event->sender;
+                $afterFindCalls[] = [
+                    $ar::class,
+                    $ar->getIsNewRecord(),
+                    $ar->getPrimaryKey(),
+                    $ar->isRelationPopulated('orders')
+                ];
+            },
+        );
 
         $customer = Customer::get(1);
         $this->assertNotNull($customer);
         $this->assertEquals([[$customerClass, false, 1, false]], $afterFindCalls);
-        $afterFindCalls = [];
 
+        $afterFindCalls = [];
         $customer = Customer::mget([1, 2]);
+
         $this->assertNotNull($customer);
-        $this->assertEquals([
-            [$customerClass, false, 1, false],
-            [$customerClass, false, 2, false],
-        ], $afterFindCalls);
+        $this->assertEquals([[$customerClass, false, 1, false], [$customerClass, false, 2, false]], $afterFindCalls);
+
         $afterFindCalls = [];
 
-        Event::off(BaseActiveRecord::className(), BaseActiveRecord::EVENT_AFTER_FIND);
+        Event::off(BaseActiveRecord::class, BaseActiveRecord::EVENT_AFTER_FIND);
     }
 
     public function testFindEmptyPkCondition(): void
@@ -495,10 +615,12 @@ class ActiveRecordTest extends TestCase
         /* @var $this TestCase|ActiveRecordTestTrait */
         /* @var $orderItemClass \yii\db\ActiveRecordInterface */
         $orderItemClass = $this->getOrderItemClass();
+
         $orderItem = new $orderItemClass();
         $orderItem->setAttributes(['order_id' => 1, 'item_id' => 1, 'quantity' => 1, 'subtotal' => 30.0], false);
         $orderItem->save(false);
-        Record::refreshIndex($orderItem::className(), $orderItem->db);
+
+        Record::refreshIndex($orderItem::class, $orderItem->db);
 
         $orderItems = $orderItemClass::find()->where(['_id' => [$orderItem->getPrimaryKey()]])->all();
         $this->assertCount(1, $orderItems);
@@ -530,6 +652,7 @@ class ActiveRecordTest extends TestCase
     {
         $order = Order::findOne(1);
         $items = $order->itemsByArrayValue;
+
         $this->assertCount(2, $items);
         $this->assertTrue(isset($items[1]));
         $this->assertTrue(isset($items[2]));
@@ -538,6 +661,7 @@ class ActiveRecordTest extends TestCase
 
         $order = Order::findOne(2);
         $items = $order->itemsByArrayValue;
+
         $this->assertCount(3, $items);
         $this->assertTrue(isset($items[3]));
         $this->assertTrue(isset($items[4]));
@@ -551,8 +675,11 @@ class ActiveRecordTest extends TestCase
     {
         /* @var $order Order */
         $order = Order::find()->with('itemsByArrayValue')->where(['_id' => 1])->one();
+
         $this->assertTrue($order->isRelationPopulated('itemsByArrayValue'));
+
         $items = $order->itemsByArrayValue;
+
         $this->assertCount(2, $items);
         $this->assertTrue(isset($items[1]));
         $this->assertTrue(isset($items[2]));
@@ -561,8 +688,11 @@ class ActiveRecordTest extends TestCase
 
         /* @var $order Order */
         $order = Order::find()->with('itemsByArrayValue')->where(['_id' => 2])->one();
+
         $this->assertTrue($order->isRelationPopulated('itemsByArrayValue'));
+
         $items = $order->itemsByArrayValue;
+
         $this->assertCount(3, $items);
         $this->assertTrue(isset($items[3]));
         $this->assertTrue(isset($items[4]));
@@ -577,6 +707,7 @@ class ActiveRecordTest extends TestCase
         /* @var $order Order */
         $order = Order::find()->where(['_id' => 1])->one();
         $items = $order->itemsByArrayValue;
+
         $this->assertCount(2, $items);
         $this->assertTrue(isset($items[1]));
         $this->assertTrue(isset($items[2]));
@@ -586,7 +717,10 @@ class ActiveRecordTest extends TestCase
         try {
             $order->link('itemsByArrayValue', $item);
         } catch (InvalidCallException $e) {
-            $this->assertEquals($e->getMessage(), 'Unable to link models: foreign model cannot be linked if its property is an array.');
+            $this->assertEquals(
+                $e->getMessage(),
+                'Unable to link models: foreign model cannot be linked if its property is an array.',
+            );
         }
     }
 
@@ -595,13 +729,14 @@ class ActiveRecordTest extends TestCase
         /* @var $order Order */
         $order = Order::find()->where(['_id' => 1])->one();
         $items = $order->itemsByArrayValue;
+
         $this->assertCount(2, $items);
         $this->assertTrue(isset($items[1]));
         $this->assertTrue(isset($items[2]));
 
         $item = Item::get(2);
         $order->unlink('itemsByArrayValue', $item);
-        Record::refreshIndex($order::className(), $order->db);
+        Record::refreshIndex($order::class, $order->db);
 
         $items = $order->itemsByArrayValue;
         $this->assertCount(1, $items);
@@ -628,7 +763,7 @@ class ActiveRecordTest extends TestCase
         $removeId = reset($itemIds);
         $item = Item::get($removeId);
         $order->unlink('itemsByArrayValue', $item);
-        Record::refreshIndex($order::className(), $order->db);
+        Record::refreshIndex($order::class, $order->db);
 
         $items = $order->itemsByArrayValue;
         $this->assertCount(1, $items);
@@ -646,22 +781,27 @@ class ActiveRecordTest extends TestCase
         try {
             /* @var $order Order */
             $order = Order::find()->where(['_id' => 1])->one();
+
             $items = $order->itemsByArrayValue;
             $this->assertCount(2, $items);
             $this->assertTrue(isset($items[1]));
             $this->assertTrue(isset($items[2]));
+
             $order->unlinkAll('itemsByArrayValue');
         } catch (\yii\base\NotSupportedException $e) {
-            $this->assertEquals($e->getMessage(), 'unlinkAll() is not supported by Elasticsearch, use unlink() instead.');
+            $this->assertEquals(
+                $e->getMessage(),
+                'unlinkAll() is not supported by Elasticsearch, use unlink() instead.',
+            );
         }
     }
 
     public function testPopulateRecordCallWhenQueryingOnParentClass(): void
     {
-        $animal = Animal::find()->where(['species' => Dog::className()])->one();
+        $animal = Animal::find()->where(['species' => Dog::class])->one();
         $this->assertEquals('bark', $animal->getDoes());
 
-        $animal = Animal::find()->where(['species' => Cat::className()])->one();
+        $animal = Animal::find()->where(['species' => Cat::class])->one();
         $this->assertEquals('meow', $animal->getDoes());
     }
 
@@ -684,7 +824,6 @@ class ActiveRecordTest extends TestCase
         // @see https://github.com/yiisoft/yii2-gii/issues/190
         $baseModel = new $customerClass();
         $this->assertFalse($baseModel->hasProperty('unExistingColumn'));
-
 
         /* @var $customer ActiveRecord */
         $customer = new $customerClass();
@@ -719,14 +858,14 @@ class ActiveRecordTest extends TestCase
         $customer->email = 'mail@example.com';
         $customer->is_active = true;
         $customer->save(false);
-        Record::refreshIndex($customer::className(), $customer->db);
+        Record::refreshIndex($customer::class, $customer->db);
 
         $customer->refresh();
         $this->assertTrue($customer->is_active);
 
         $customer->is_active = false;
         $res = $customer->save(false);
-        Record::refreshIndex($customer::className(), $customer->db);
+        Record::refreshIndex($customer::class, $customer->db);
 
         $customer->refresh();
         $this->assertFalse($customer->is_active);

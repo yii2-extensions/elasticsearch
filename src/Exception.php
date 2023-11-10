@@ -21,7 +21,7 @@ class Exception extends \yii\db\Exception
     /**
      * @return string the user-friendly name of this exception
      */
-    public function getName()
+    public function getName(): string
     {
         return 'Elasticsearch Database Exception';
     }

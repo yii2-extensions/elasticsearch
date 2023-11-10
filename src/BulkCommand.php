@@ -13,7 +13,11 @@ namespace yii\elasticsearch;
 
 use yii\base\Component;
 use yii\base\InvalidCallException;
+use yii\base\InvalidConfigException;
 use yii\helpers\Json;
+
+use function is_array;
+use function property_exists;
 
 /**
  * The [[BulkCommand]] class implements the API for accessing the Elasticsearch bulk REST API.
@@ -25,36 +29,37 @@ use yii\helpers\Json;
  */
 class BulkCommand extends Component
 {
+    public Connection|null $db = null;
     /**
-     * @var Connection
+     * @var string|null Default index to execute the queries on. Defaults to null meaning that index needs to be
+     * specified in every action.
      */
-    public $db;
+    public string|null $index = null;
     /**
-     * @var string Default index to execute the queries on. Defaults to null meaning that index needs to be specified in every action.
+     * @var string|null Default type to execute the queries on. Defaults to null meaning that type needs to be specified
+     * in every action.
      */
-    public $index;
+    public string|null $type = null;
     /**
-     * @var string Default type to execute the queries on. Defaults to null meaning that type needs to be specified in every action.
-     */
-    public $type;
-    /**
-     * @var array|string Actions to be executed in this bulk command, given as either an array of arrays or as one newline-delimited string.
+     * @var array|string Actions to be executed in this bulk command, given as either an array of arrays or as one
+     * newline-delimited string.
+     *
      * All actions except delete span two lines.
      */
-    public $actions;
+    public string|array $actions = [];
     /**
      * @var array Options to be appended to the query URL.
      */
-    public $options = [];
+    public array $options = [];
 
     /**
      * Executes the bulk command.
      *
-     * @throws \yii\base\InvalidCallException
-     *
      * @return mixed
+     * @throws Exception
+     * @throws InvalidConfigException
      */
-    public function execute()
+    public function execute(): mixed
     {
         //valid endpoints are /_bulk, /{index}/_bulk, and {index}/{type}/_bulk
         //for ES7+ type is omitted
@@ -76,7 +81,7 @@ class BulkCommand extends Component
             $body = '{}';
         } elseif (is_array($this->actions)) {
             $body = '';
-            $prettyPrintSupported = property_exists('yii\\helpers\\Json', 'prettyPrint');
+            $prettyPrintSupported = property_exists(Json::class, 'prettyPrint');
             if ($prettyPrintSupported) {
                 $originalPrettyPrint = Json::$prettyPrint;
                 Json::$prettyPrint = false; // ElasticSearch bulk API uses new lines as delimiters.
@@ -102,9 +107,9 @@ class BulkCommand extends Component
      *
      * @see https://www.elastic.co/guide/en/elasticsearch/reference/7.x/docs-bulk.html
      */
-    public function addAction($line1, $line2 = null)
+    public function addAction(array $line1, array $line2 = null): void
     {
-        if (!is_array($this->actions)) {
+        if (is_array($this->actions) === false) {
             $this->actions = [];
         }
 
@@ -124,7 +129,7 @@ class BulkCommand extends Component
      * @param string|null $type Type that the document belongs to. Can be set to null if the command has
      * a default type ([[BulkCommand::$type]]) assigned.
      */
-    public function addDeleteAction($id, $index = null, $type = null)
+    public function addDeleteAction(string $id, string $index = null, string $type = null): void
     {
         $actionData = ['_id' => $id];
 
